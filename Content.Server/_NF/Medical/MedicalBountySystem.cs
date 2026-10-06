@@ -1,7 +1,7 @@
 
 using Content.Shared._NF.Bank;
 using System.Linq;
-using Content.Server._NF.Bank;
+using Content.Lua.Shared.Bank;
 using Content.Server._NF.Medical.Components;
 using Content.Server.Administration.Logs;
 using Content.Shared.Body.Components;
@@ -37,7 +37,7 @@ public sealed partial class MedicalBountySystem : EntitySystem
     [Dependency] IRobustRandom _random = default!;
     [Dependency] IPrototypeManager _proto = default!;
     [Dependency] AudioSystem _audio = default!;
-    [Dependency] BankSystem _bank = default!;
+    [Dependency] IBankSystem _bank = default!;
     [Dependency] BloodstreamSystem _bloodstream = default!;
     [Dependency] DamageableSystem _damageable = default!;
     [Dependency] HandsSystem _hands = default!;
@@ -184,7 +184,7 @@ public sealed partial class MedicalBountySystem : EntitySystem
         {
             successString = "medical-bounty-redemption-success-to-station";
             // Find the fractions of the whole to pay out.
-            _bank.TrySectorDeposit(bankPayment!.Account, bountyPayout, LedgerEntryType.MedicalBountyTax);
+            _bank.TrySectorDeposit(bankPayment!.Account, bountyPayout, LedgerEntryType.MedicalBountyTax, uid);
             _adminLog.Add(LogType.MedicalBountyRedeemed, LogImpact.Low, $"{ToPrettyString(ev.Actor):actor} redeemed the medical bounty for {ToPrettyString(bountyUid):subject}. Base value: {bountyPayout} (paid to station accounts).");
         }
         else if (bountyPayout > 0)
@@ -198,7 +198,7 @@ public sealed partial class MedicalBountySystem : EntitySystem
         // Pay tax accounts
         foreach (var (account, taxCoeff) in component.TaxAccounts)
         {
-            _bank.TrySectorDeposit(account, (int)(bountyPayout * taxCoeff), LedgerEntryType.MedicalBountyTax);
+            _bank.TrySectorDeposit(account, (int)(bountyPayout * taxCoeff), LedgerEntryType.MedicalBountyTax, uid);
         }
 
         QueueDel(bountyUid);

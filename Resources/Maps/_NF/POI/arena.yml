@@ -146,11 +146,9 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: StationGrid
       dampingModifier: 0.25
     - type: GridPathfinding
-    - type: BecomesStation
-      id: ThePit
     - type: Gravity
       gravityShakeSound: !type:SoundPathSpecifier
         path: /Audio/Effects/alert.ogg
@@ -15667,7 +15665,7 @@ entities:
     - type: Transform
       pos: 23.5,-9.5
       parent: 2
-- proto: NFWeaponEnergyPistolDisablerPractice
+- proto: WeaponDisablerPractice
   entities:
   - uid: 1772
     components:

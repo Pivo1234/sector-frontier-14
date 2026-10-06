@@ -1,7 +1,7 @@
 using System.Threading;
 using Content.Server.Administration.Logs;
 using Content.Server.AlertLevel;
-using Content.Shared._Lua.RoundEnd;
+using Content.Lua.Shared.RoundEnd;
 using Content.Shared.CCVar;
 using Content.Server.Chat.Managers;
 using Content.Server.Chat.Systems;
@@ -165,8 +165,9 @@ namespace Content.Server.RoundEnd
 
             if (requester != null)
             {
-                var stationUid = _sectorService.GetServiceEntity(); // Frontier: sector-wide alerts
-                // var stationUid = _stationSystem.GetOwningStation(requester.Value); // Frontier: sector-wide alerts
+                EntityUid stationUid = _sectorService.GetServiceEntity();
+                if (_sectorService.TryGetServiceEntity(requester.Value, out var localService))
+                    stationUid = localService;
                 if (TryComp<AlertLevelComponent>(stationUid, out var alertLevel))
                 {
                     duration = _protoManager

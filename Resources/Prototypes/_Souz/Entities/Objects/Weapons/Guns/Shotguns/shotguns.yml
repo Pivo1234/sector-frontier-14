@@ -1,0 +1,10 @@
+# source: Entities/Objects/Weapons/Guns/Shotguns/shotguns.yml
+- type: entity
+  parent: WeaponShotgunEnforcer
+  id: USSPSFWeaponShotgunEnforcer
+  categories: [ USSP ]
+  suffix: USSP
+  components:
+  - type: Gun # Corvax-Guns
+    soundGunshot:
+      path: /Audio/_Corvax/Weapons/Guns/Gunshots/shotgun_metal.ogg

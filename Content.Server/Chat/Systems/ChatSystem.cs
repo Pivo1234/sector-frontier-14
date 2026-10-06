@@ -1,5 +1,7 @@
-using Content.Server._Lua.ChatFilter; // Lua
-using Content.Server._Lua.Language;
+using Content.Lua.Common.ChatFilter;
+using Content.Shared.Language;
+using Content.Shared.Language.Systems;
+using Content.Lua.Shared.Announce;
 using Content.Server.Administration.Logs;
 using Content.Server.Administration.Managers;
 using Content.Server.Chat.Managers;
@@ -9,8 +11,8 @@ using Content.Server.Speech.Prototypes;
 using Content.Server.Station.Components;
 using Content.Server.Station.Systems;
 using Content.Server.Discord.DiscordLink;
-using Content.Shared._Lua.Chat.Systems;
-using Content.Shared._Lua.Language;
+using Content.Shared.Chat.Systems;
+using Content.Shared._RMC14.Announce;
 using Content.Shared.ActionBlocker;
 using Content.Shared.Administration;
 using Content.Shared.CCVar;
@@ -32,6 +34,7 @@ using Robust.Shared.Audio;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Configuration;
 using Robust.Shared.Console;
+using Robust.Shared.Map;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
@@ -42,6 +45,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using static Content.Server.Corvax.TTS.TTSSystem;
+using Content.Lua.Shared.Language;
 
 namespace Content.Server.Chat.Systems;
 
@@ -56,7 +60,7 @@ public sealed partial class ChatSystem : SharedChatSystem
     [Dependency] private readonly IConfigurationManager _configurationManager = default!;
     [Dependency] private readonly IChatManager _chatManager = default!;
     [Dependency] private readonly IChatSanitizationManager _sanitizer = default!;
-    [Dependency] private readonly ChatFilterManager _chatFilter = default!; // Lua
+    [Dependency] private readonly IChatFilterManager _chatFilter = default!; // Lua
     [Dependency] private readonly IAdminManager _adminManager = default!;
     [Dependency] private readonly IPlayerManager _playerManager = default!;
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
@@ -70,7 +74,8 @@ public sealed partial class ChatSystem : SharedChatSystem
     [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
     [Dependency] private readonly DiscordChatLink _discordChatLink = default!;
     [Dependency] private readonly ExamineSystemShared _examineSystem = default!;
-    [Dependency] private readonly LanguageSystem _language = default!;
+    [Dependency] private readonly ILanguageSystem _language = default!;
+    [Dependency] private readonly ILuaAnnouncementOverlaySystem _announcementOverlay = default!;
 
     public const int VoiceRange = 10; // how far voice goes in world units
     public const int WhisperClearRange = 2; // how far whisper goes while still being understandable, in world units
@@ -349,37 +354,37 @@ public sealed partial class ChatSystem : SharedChatSystem
         string originalMessage = "",
         EntityUid? author = null,
         string? voice = null,
-        bool usePresetTTS = false
-        )
+        bool usePresetTTS = false,
+        EntityUid? speaker = null,
+        string? factionId = null,
+        AnnouncementPreset? announcementPreset = null)
     {
         sender ??= Loc.GetString("chat-manager-sender-announcement");
-
-        var wrappedMessage = Loc.GetString("chat-manager-sender-announcement-wrap-message", ("sender", sender), ("message", FormattedMessage.EscapeText(message)));
-        _chatManager.ChatMessageToAll(ChatChannel.Radio, message, wrappedMessage, default, false, true, colorOverride);
-
-        // Fucked up logic ahead... FIX THIS PLEASE.
+        var filter = Filter.Broadcast();
+        if (!TrySendAnnouncementOverlay(filter, message, sender, colorOverride, null, speaker, factionId, announcementPreset))
+        {
+            var wrappedMessage = Loc.GetString("chat-manager-sender-announcement-wrap-message",
+                ("sender", sender),
+                ("message", FormattedMessage.EscapeText(message)));
+            _chatManager.ChatMessageToAll(ChatChannel.Radio, message, wrappedMessage, default, false, true, colorOverride);
+        }
 
         if (playSound)
         {
-            if (announcementSound == null)
-            {
-                if (sender == Loc.GetString("chat-manager-sender-announcement")) announcementSound = new SoundPathSpecifier(CentComAnnouncementSound); // Corvax-Announcements: Support custom alert sound from admin panel
-            }
+            PlayAnnouncementSound(announcementSound, filter);
 
-            _audio.PlayGlobal(announcementSound == null ? DefaultAnnouncementSound : _audio.GetSound(announcementSound), Filter.Broadcast(), true, announcementSound?.Params ?? AudioParams.Default.WithVolume(-2f));
-
-            if (author != null && TryComp<TTSComponent>(author.Value, out var tts) && tts.VoicePrototypeId != null) // For comms console announcements
+            if (author != null && TryComp<TTSComponent>(author.Value, out var tts) && tts.VoicePrototypeId != null)
             {
                 var ev = new AnnounceSpokeEvent(tts.VoicePrototypeId, originalMessage, author.Value);
                 RaiseLocalEvent(ev);
             }
-            else if (usePresetTTS && sender == Loc.GetString("chat-manager-sender-announcement")) // For admin announcements from Centcomm with preset voices
+            else if (usePresetTTS && sender == Loc.GetString("comms-console-announcement-title-centcom"))
             {
                 voice = _centcommTTS;
                 var ev = new AnnounceSpokeEvent(voice, originalMessage, null);
                 RaiseLocalEvent(ev);
             }
-            else if (voice != null) // For admin announcements
+            else if (voice != null)
             {
                 var ev = new AnnounceSpokeEvent(voice, originalMessage, null);
                 RaiseLocalEvent(ev);
@@ -388,16 +393,24 @@ public sealed partial class ChatSystem : SharedChatSystem
         _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Global station announcement from {sender}: {message}");
     }
 
-    /// <summary>
-    /// Dispatches an announcement to players selected by filter.
-    /// </summary>
-    /// <param name="filter">Filter to select players who will recieve the announcement</param>
-    /// <param name="message">The contents of the message</param>
-    /// <param name="source">The entity making the announcement (used to determine the station)</param>
-    /// <param name="sender">The sender (Communications Console in Communications Console Announcement)</param>
-    /// <param name="playDefaultSound">Play the announcement sound</param>
-    /// <param name="announcementSound">Sound to play</param>
-    /// <param name="colorOverride">Optional color for the announcement message</param>
+    public void DispatchMapAnnouncement(
+        MapId mapId,
+        string message,
+        string? sender = null,
+        bool playSound = true,
+        SoundSpecifier? announcementSound = null,
+        Color? colorOverride = null,
+        EntityUid? speaker = null,
+        string? factionId = null,
+        AnnouncementPreset? announcementPreset = null)
+    {
+        if (mapId == MapId.Nullspace)
+            return;
+
+        var filter = Filter.Empty().AddInMap(mapId, EntityManager);
+        DispatchFilteredAnnouncement(filter, message, sender: sender, playSound: playSound, announcementSound: announcementSound, colorOverride: colorOverride, speaker: speaker, factionId: factionId, announcementPreset: announcementPreset);
+    }
+
     public void DispatchFilteredAnnouncement(
         Filter filter,
         string message,
@@ -405,58 +418,89 @@ public sealed partial class ChatSystem : SharedChatSystem
         string? sender = null,
         bool playSound = true,
         SoundSpecifier? announcementSound = null,
-        Color? colorOverride = null)
+        Color? colorOverride = null,
+        EntityUid? speaker = null,
+        string? factionId = null,
+        AnnouncementPreset? announcementPreset = null)
     {
         sender ??= Loc.GetString("chat-manager-sender-announcement");
-
-        var wrappedMessage = Loc.GetString("chat-manager-sender-announcement-wrap-message", ("sender", sender), ("message", FormattedMessage.EscapeText(message)));
-        _chatManager.ChatMessageToManyFiltered(filter, ChatChannel.Radio, message, wrappedMessage, source ?? default, false, true, colorOverride);
-        if (playSound)
+        if (!TrySendAnnouncementOverlay(filter, message, sender, colorOverride, source, speaker, factionId, announcementPreset))
         {
-            _audio.PlayGlobal(announcementSound?.ToString() ?? DefaultAnnouncementSound, filter, true, AudioParams.Default.WithVolume(-2f));
+            var wrappedMessage = Loc.GetString("chat-manager-sender-announcement-wrap-message",
+                ("sender", sender),
+                ("message", FormattedMessage.EscapeText(message)));
+            _chatManager.ChatMessageToManyFiltered(filter, ChatChannel.Radio, message, wrappedMessage, source ?? default, false, true, colorOverride);
         }
+        if (playSound)
+            PlayAnnouncementSound(announcementSound, filter);
         _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Station Announcement from {sender}: {message}");
     }
 
-    /// <summary>
-    /// Dispatches an announcement on a specific station
-    /// </summary>
-    /// <param name="source">The entity making the announcement (used to determine the station)</param>
-    /// <param name="message">The contents of the message</param>
-    /// <param name="sender">The sender (Communications Console in Communications Console Announcement)</param>
-    /// <param name="playDefaultSound">Play the announcement sound</param>
-    /// <param name="colorOverride">Optional color for the announcement message</param>
     public void DispatchStationAnnouncement(
         EntityUid source,
         string message,
         string? sender = null,
         bool playDefaultSound = true,
         SoundSpecifier? announcementSound = null,
-        Color? colorOverride = null)
+        Color? colorOverride = null,
+        EntityUid? speaker = null,
+        string? factionId = null,
+        AnnouncementPreset? announcementPreset = null)
     {
         sender ??= Loc.GetString("chat-manager-sender-announcement");
-
-        var wrappedMessage = Loc.GetString("chat-manager-sender-announcement-wrap-message", ("sender", sender), ("message", FormattedMessage.EscapeText(message)));
         var station = _stationSystem.GetOwningStation(source);
 
         if (station == null)
-        {
-            // you can't make a station announcement without a station
             return;
-        }
 
-        if (!TryComp<StationDataComponent>(station, out var stationDataComp)) return;
+        if (!TryComp<StationDataComponent>(station, out var stationDataComp))
+            return;
 
         var filter = _stationSystem.GetInStation(stationDataComp);
-
-        _chatManager.ChatMessageToManyFiltered(filter, ChatChannel.Radio, message, wrappedMessage, source, false, true, colorOverride);
-
-        if (playDefaultSound)
+        if (!TrySendAnnouncementOverlay(filter, message, sender, colorOverride, source, speaker, factionId, announcementPreset))
         {
-            _audio.PlayGlobal(announcementSound?.ToString() ?? DefaultAnnouncementSound, filter, true, AudioParams.Default.WithVolume(-2f));
+            var wrappedMessage = Loc.GetString("chat-manager-sender-announcement-wrap-message",
+                ("sender", sender),
+                ("message", FormattedMessage.EscapeText(message)));
+            _chatManager.ChatMessageToManyFiltered(filter, ChatChannel.Radio, message, wrappedMessage, source, false, true, colorOverride);
         }
 
+        if (playDefaultSound)
+            PlayAnnouncementSound(announcementSound, filter);
+
         _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Station Announcement on {station} from {sender}: {message}");
+    }
+
+    private bool TrySendAnnouncementOverlay(
+        Filter filter,
+        string message,
+        string sender,
+        Color? colorOverride,
+        EntityUid? source,
+        EntityUid? speaker,
+        string? factionId,
+        AnnouncementPreset? preset)
+    {
+        if (speaker == null && string.IsNullOrWhiteSpace(factionId) && preset == null)
+            return false;
+        _announcementOverlay.Dispatch(filter, new AnnouncementOverlayParams
+        {
+            Message = message,
+            Speaker = speaker,
+            Source = source,
+            FactionId = factionId,
+            Preset = preset,
+            SenderTitle = sender,
+            ColorOverride = colorOverride
+        });
+        return true;
+    }
+
+    private void PlayAnnouncementSound(SoundSpecifier? announcementSound, Filter filter)
+    {
+        var sound = announcementSound ?? new SoundPathSpecifier(DefaultAnnouncementSound);
+        var args = announcementSound?.Params ?? AudioParams.Default.WithVolume(-2f);
+        _audio.PlayGlobal(_audio.GetSound(sound), filter, true, args);
     }
 
     #endregion
@@ -714,7 +758,7 @@ public sealed partial class ChatSystem : SharedChatSystem
             ("entityName", name),
             ("message", FormattedMessage.EscapeText(message)));
 
-        SendInVoiceRange(ChatChannel.LOOC, name, message, wrappedMessage, obfuscated: string.Empty, obfuscatedWrappedMessage: string.Empty, source, hideChat ? ChatTransmitRange.HideChat : ChatTransmitRange.Normal, player.UserId, languageOverride: LanguageSystem.Universal); // Lua
+        SendInVoiceRange(ChatChannel.LOOC, name, message, wrappedMessage, obfuscated: string.Empty, obfuscatedWrappedMessage: string.Empty, source, hideChat ? ChatTransmitRange.HideChat : ChatTransmitRange.Normal, player.UserId, languageOverride: SharedLanguageSystem.Universal); // Lua
         _adminLogger.Add(LogType.Chat, LogImpact.Low, $"LOOC from {player:Player}: {message}");
         _discordChatLink.SendMessage(message, player.Name, ChatChannel.LOOC);
     }

@@ -67,7 +67,7 @@ namespace Content.IntegrationTests.Tests.Body
             GridAtmosphereComponent relevantAtmos = default;
             var startingMoles = 0.0f;
 
-            var testMapName = new ResPath("Maps/Test/Breathing/3by3-20oxy-80nit.yml");
+            var testMapName = new ResPath("Maps/_Lua/Test/Breathing/3by3-20oxy-80nit.yml");
 
             await server.WaitPost(() =>
             {
@@ -132,7 +132,7 @@ namespace Content.IntegrationTests.Tests.Body
             await using var pair = await PoolManager.GetServerClient();
             var server = pair.Server;
 
-            var mapManager = server.ResolveDependency<IMapManager>();
+            var mapManager = server.ResolveDependency<IEntityManager>().System<SharedMapSystem>();
             var entityManager = server.ResolveDependency<IEntityManager>();
             var cfg = server.ResolveDependency<IConfigurationManager>();
             var mapLoader = entityManager.System<MapLoaderSystem>();
@@ -142,7 +142,7 @@ namespace Content.IntegrationTests.Tests.Body
             RespiratorComponent respirator = null;
             EntityUid human = default;
 
-            var testMapName = new ResPath("Maps/Test/Breathing/3by3-20oxy-80nit.yml");
+            var testMapName = new ResPath("Maps/_Lua/Test/Breathing/3by3-20oxy-80nit.yml");
 
             await server.WaitPost(() =>
             {

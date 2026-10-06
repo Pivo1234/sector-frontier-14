@@ -1,10 +1,10 @@
+using Content.Lua.Shared.Shuttles;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using Content.Server._NF.Shuttles.Components; // Frontier: FTL knockdown immunity
-using Content.Server._Lua.NoShuttleFTL;
+using Content.Lua.Shared.NoShuttleFTL;
 using Content.Server.Emp; // Lua
-using Content.Server._Lua.Starmap.Components; // Lua Warp transit marker
 using Content.Server.Shuttles.Components;
 using Content.Server.Shuttles.Events;
 using Content.Server.Station.Events;
@@ -20,7 +20,7 @@ using Content.Shared.Shuttles.Systems;
 using Content.Shared.StatusEffect;
 using Content.Shared.Timing;
 using Content.Shared.Whitelist;
-using Content.Shared._Lua.Shuttles.Components;
+using Content.Lua.Shared.Shuttles.Components;
 using JetBrains.Annotations;
 using Robust.Shared.Audio;
 using Robust.Shared.Audio.Components;
@@ -40,6 +40,8 @@ namespace Content.Server.Shuttles.Systems;
 
 public sealed partial class ShuttleSystem
 {
+    private readonly record struct FtlShuttleEntity(EntityUid Owner, FTLComponent Comp1, IShuttleGrid Comp2);
+
     /*
      * This is a way to move a shuttle from one location to another, via an intermediate map for fanciness.
      */
@@ -355,7 +357,7 @@ public sealed partial class ShuttleSystem
     /// </summary>
     public void FTLToCoordinates(
         EntityUid shuttleUid,
-        ShuttleComponent component,
+        IShuttleGrid component,
         EntityCoordinates coordinates,
         Angle angle,
         float? startupTime = null,
@@ -397,7 +399,7 @@ public sealed partial class ShuttleSystem
     /// </summary>
     public void FTLToDock(
         EntityUid shuttleUid,
-        ShuttleComponent component,
+        IShuttleGrid component,
         EntityUid target,
         float? startupTime = null,
         float? hyperspaceTime = null,
@@ -461,7 +463,7 @@ public sealed partial class ShuttleSystem
             if (dockComp.DockedWith == null)
                 continue;
             var dockedGridUid = _transform.GetParentUid(dockComp.DockedWith.Value);
-            if (dockedGridUid == EntityUid.Invalid || !HasComp<ShuttleComponent>(dockedGridUid))
+            if (dockedGridUid == EntityUid.Invalid || !_gridAccess.HasFtlGrid(dockedGridUid))
                 continue;
             GetAllDockedShuttlesIgnoringFTLLock(dockedGridUid, dockedShuttles);
         }
@@ -485,7 +487,7 @@ public sealed partial class ShuttleSystem
             if (xform.GridUid != shuttleUid || latch.JointId == null) continue;
             if (latch.TargetGrid == null) continue;
             var target = latch.TargetGrid.Value;
-            if (!HasComp<ShuttleComponent>(target))
+            if (!_gridAccess.HasFtlGrid(target))
             {
                 reason = Loc.GetString("shuttle-console-ftl-magnet-target");
                 return false;
@@ -496,7 +498,7 @@ public sealed partial class ShuttleSystem
         return true;
     }
 
-    private bool TrySetupFTL(EntityUid uid, ShuttleComponent shuttle, [NotNullWhen(true)] out FTLComponent? component)
+    private bool TrySetupFTL(EntityUid uid, IShuttleGrid shuttle, [NotNullWhen(true)] out FTLComponent? component)
     {
         component = null;
 
@@ -550,7 +552,7 @@ public sealed partial class ShuttleSystem
 
                 var connectedEntityUid = _transform.GetParentUid(dockComp.DockedWith.Value);
                 if (connectedEntityUid == EntityUid.Invalid ||
-                    !HasComp<ShuttleComponent>(connectedEntityUid) ||
+                    !_gridAccess.HasFtlGrid(connectedEntityUid) ||
                     !dockedShuttles.Contains(connectedEntityUid))
                 {
                     _dockSystem.Undock((dock, dockComp));
@@ -591,11 +593,11 @@ public sealed partial class ShuttleSystem
     /// <summary>
     /// Transitions shuttle to FTL map.
     /// </summary>
-    private void UpdateFTLStarting(Entity<FTLComponent, ShuttleComponent> entity)
+    private void UpdateFTLStarting(FtlShuttleEntity entity)
     {
         var uid = entity.Owner;
         var comp = entity.Comp1;
-        var xform = _xformQuery.GetComponent(entity);
+        var xform = _xformQuery.GetComponent(uid);
         // Lua start: fallback
         var grid = Comp<MapGridComponent>(uid);
         if (!ValidateGridForFtl(uid, grid, xform))
@@ -669,7 +671,7 @@ public sealed partial class ShuttleSystem
 
         var width = grid.LocalAABB.Width;
         var ftlMap = EnsureFTLMap();
-        var body = _physicsQuery.GetComponent(entity);
+        var body = _physicsQuery.GetComponent(uid);
         var shuttleCenter = grid.LocalAABB.Center;
 
         // FTL Mono Carrier start
@@ -792,7 +794,7 @@ public sealed partial class ShuttleSystem
     /// <summary>
     /// Shuttle arriving.
     /// </summary>
-    private void UpdateFTLTravelling(Entity<FTLComponent, ShuttleComponent> entity)
+    private void UpdateFTLTravelling(FtlShuttleEntity entity)
     {
         // FTL Mono Carrier start
         // Linked shuttles are moved/handled by the main shuttle.
@@ -825,7 +827,7 @@ public sealed partial class ShuttleSystem
     /// <summary>
     ///  Shuttle arrived.
     /// </summary>
-    private void UpdateFTLArriving(Entity<FTLComponent, ShuttleComponent> entity)
+    private void UpdateFTLArriving(FtlShuttleEntity entity)
     {
         var uid = entity.Owner;
         var xform = _xformQuery.GetComponent(uid);
@@ -839,7 +841,7 @@ public sealed partial class ShuttleSystem
         // FTL Mono Carrier end
 
         DoTheDinosaur(xform);
-        _dockSystem.SetDockBolts(entity, false);
+        _dockSystem.SetDockBolts(uid, false);
 
         _physics.SetLinearVelocity(uid, Vector2.Zero, body: body);
         _physics.SetAngularVelocity(uid, 0f, body: body);
@@ -961,7 +963,8 @@ public sealed partial class ShuttleSystem
                 _physics.SetLinearVelocity(dockedUid, Vector2.Zero, body: dockedBody);
                 _physics.SetAngularVelocity(dockedUid, 0f, body: dockedBody);
 
-                var dockedShuttle = Comp<ShuttleComponent>(dockedUid);
+                if (!_gridAccess.TryGetShuttleGrid(dockedUid, out var dockedShuttle))
+                    continue;
                 if (HasComp<MapGridComponent>(xform.MapUid))
                     Disable(dockedUid, component: dockedBody);
                 else
@@ -1026,12 +1029,12 @@ public sealed partial class ShuttleSystem
         RaiseLocalEvent(uid, ref ftlEvent, true);
     }
 
-    private void UpdateFTLCooldown(Entity<FTLComponent, ShuttleComponent> entity)
+    private void UpdateFTLCooldown(FtlShuttleEntity entity)
     {
         // FTL Mono Carrier start
         // Remove the main shuttle's FTL component.
         var uid = entity.Owner;
-        RemCompDeferred<FTLComponent>(entity);
+        RemCompDeferred<FTLComponent>(uid);
 
         // Force linked shuttles (from the same trip) to also end cooldown now.
         var linkedQuery = EntityQueryEnumerator<FTLComponent>();
@@ -1052,13 +1055,13 @@ public sealed partial class ShuttleSystem
     {
         var curTime = _gameTiming.CurTime;
         var toUpdate = new ValueList<EntityUid>();
-        var query = EntityQueryEnumerator<FTLComponent, ShuttleComponent>();
+        var query = EntityQueryEnumerator<FTLComponent>();
 
-        while (query.MoveNext(out var uid, out _, out _))
+        while (query.MoveNext(out var uid, out _))
         { toUpdate.Add(uid); }
         foreach (var uid in toUpdate)
         {
-            if (!TryComp<FTLComponent>(uid, out var comp) || !TryComp<ShuttleComponent>(uid, out var shuttle)) continue;
+            if (!TryComp<FTLComponent>(uid, out var comp) || !_gridAccess.TryGetShuttleGrid(uid, out var shuttle)) continue;
             // FTL Mono Carrier start
             // Linked shuttles are driven by the main shuttle; skip their state machine.
             if (comp.LinkedShuttle.HasValue)
@@ -1068,7 +1071,7 @@ public sealed partial class ShuttleSystem
             if (curTime < comp.StateTime.End)
                 continue;
 
-            var entity = (uid, comp, shuttle);
+            var entity = new FtlShuttleEntity(uid, comp, shuttle);
 
             switch (comp.State)
             {
@@ -1251,7 +1254,7 @@ public sealed partial class ShuttleSystem
     /// </summary>
     public bool TryFTLDock(
         EntityUid shuttleUid,
-        ShuttleComponent component,
+        IShuttleGrid component,
         EntityUid targetUid,
         string? priorityTag = null,
         DockType dockType = DockType.Airlock) // Frontier
@@ -1265,7 +1268,7 @@ public sealed partial class ShuttleSystem
     /// </summary>
     public bool TryFTLDock(
         EntityUid shuttleUid,
-        ShuttleComponent component,
+        IShuttleGrid component,
         EntityUid targetUid,
         [NotNullWhen(true)] out DockingConfig? config,
         string? priorityTag = null,
@@ -1576,7 +1579,7 @@ public sealed partial class ShuttleSystem
 
         foreach (var fixture in manager.Fixtures.Values)
         {
-            if (xform.MapID == _ticker.DefaultMap)
+            if (_sectors.TryGetHubMapId(out var hubMap) && xform.MapID == hubMap)
                 break; //Frontier - FTL is too buggy to let it just fucking gib people wtf - so we disable for frontier's z-level
 
             if (!fixture.Hard)

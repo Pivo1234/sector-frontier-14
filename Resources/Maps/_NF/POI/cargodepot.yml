@@ -65,14 +65,12 @@ entities:
     - type: Fixtures
       fixtures: {}
     - type: OccluderTree
-    - type: Shuttle
+    - type: StationGrid
       dampingModifier: 0.25
     - type: GridPathfinding
     - type: Gravity
       gravityShakeSound: !type:SoundPathSpecifier
         path: /Audio/Effects/alert.ogg
-    - type: BecomesStation
-      id: CargoDepot
     - type: DecalGrid
       chunkCollection:
         version: 2

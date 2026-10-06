@@ -350,6 +350,21 @@
       Plasma: 5
 
 - type: entity
+  id: ResearchAndDevelopmentServerLuaTechMachineCircuitboard
+  parent: BaseMachineCircuitboard
+  name: LuaTech R&D server machine board
+  description: A machine printed circuit board for a LuaTech R&D server.
+  categories: [ LuaTech ]
+  components:
+  - type: LuaTech
+  - type: Sprite
+    state: science
+  - type: MachineBoard
+    prototype: ResearchAndDevelopmentServerLuaTech
+    stackRequirements:
+      Plasma: 5
+
+- type: entity
   id: BiogeneratorMachineCircuitboard
   parent: BaseMachineCircuitboard
   name: biogenerator machine board
@@ -1490,19 +1505,6 @@
       stackRequirements:
         # Manipulator: 4 # Frontier
         Glass: 1
-      tagRequirements: # Mono
-        MicroprocessorEconomy1:
-          amount: 2
-          defaultPrototype: MicroprocessorEconomy1
-        ComponentBrickEconomy1:
-          amount: 1
-          defaultPrototype: ComponentBrickEconomy1
-        ElectromagnetEconomy1:
-          amount: 2
-          defaultPrototype: ElectromagnetEconomy1
-        ArmorPlateEconomy2:
-          amount: 1
-          defaultPrototype: ArmorPlateEconomy2
 
 - type: entity
   parent: BaseMachineCircuitboard
@@ -1529,9 +1531,9 @@
       ElectromagnetEconomy1:
         amount: 1
         defaultPrototype: ElectromagnetEconomy1
-      ArmorPlateEconomy3:
+      ArmorPlateEconomy1:
         amount: 1
-        defaultPrototype: ArmorPlateEconomy3
+        defaultPrototype: ArmorPlateEconomy1
 
 - type: entity
   id: SheetifierMachineCircuitboard

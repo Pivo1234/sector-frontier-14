@@ -60,10 +60,8 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: StationGrid
     - type: GridPathfinding
-    - type: BecomesStation
-      id: Grifty
     - type: Gravity
       gravityShakeSound: !type:SoundPathSpecifier
         path: /Audio/Effects/alert.ogg
@@ -5996,7 +5994,7 @@ entities:
     - type: Transform
       pos: 1.5,2.5
       parent: 1
-- proto: NFWeaponRevolverDeckardExpeditionGrifty
+- proto: WeaponRevolverDeckardExpeditionGrifty
   entities:
   - uid: 219
     components:

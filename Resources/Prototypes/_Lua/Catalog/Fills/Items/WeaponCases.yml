@@ -8,7 +8,7 @@
   - type: StorageFill
     contents:
       - id: WeaponSubMachineGunVector45_ACP
-      - id: Magazine45_ACPSubMachineGunFMJ
+      - id: Magazine45_ACPSubMachineGunEmpty
         amount: 3
       - id: AmmoBox45_ACPFMJ
 
@@ -20,21 +20,21 @@
   - type: StorageFill
     contents:
       - id: WeaponSubMachineGunVector9x19mm
-      - id: Magazine9x19mmSubMachineGunFMJ
+      - id: Magazine9x19mmSubMachineGunEmpty
         amount: 3
       - id: AmmoBox9x19mmFMJ
 
 - type: entity
   id: WeaponCaseLongLecterBundle
   parent: WeaponCaseLong
-  suffix: Lecter 5.56x45mm
+  suffix: Lecter 6.8x52mm | 5.56x45mm
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponRifleAssaultLecter
-      - id: Magazine556x45mmFMJ
+      - id: WeaponRifleLecter
+      - id: Magazine68x52mmCaselessEmpty
         amount: 3
-      - id: AmmoBox556x45mmFMJ
+      - id: AmmoBox68x52mmCaseless
 
 - type: entity
   id: WeaponCaseLongNtsfLtrBundle
@@ -44,7 +44,7 @@
   - type: StorageFill
     contents:
       - id: WeaponRifleNtsfLtr
-      - id: Magazine556x45mmFMJ
+      - id: Magazine556x45mmEmpty
         amount: 3
       - id: AmmoBox556x45mmFMJ
 
@@ -67,7 +67,7 @@
   - type: StorageFill
     contents:
       - id: WeaponRifleAnnie
-      - id: Magazine762x39mmFMJ
+      - id: Magazine762x39mmEmpty
         amount: 3
       - id: AmmoBox762x39mmFMJ
 
@@ -79,8 +79,9 @@
   - type: StorageFill
     contents:
       - id: WeaponRifleMR8C
-      - id: Magazine762x54mmRFMJ
+      - id: Magazine8x65mmEmpty
         amount: 3
+      - id: AmmoBox8x65mmSKR
 
 - type: entity
   id: WeaponCaseLongGrizzlyBundle
@@ -91,21 +92,21 @@
     contents:
       - id: WeaponLMGGrizzly
         amount: 1
-      - id: Magazine68x52mmCaselessBig
+      - id: Magazine68x52mmCaselessBigEmpty
         amount: 2
       - id: AmmoBox68x52mmCaseless
 
 - type: entity
   id: WeaponCaseLongXLR556Bundle
   parent: WeaponCaseLong
-  suffix: VFD XLR-556 ICWS
+  suffix: VFD XLR-556 ICWS 5.56x45mm
   components:
   - type: StorageFill
     contents:
       - id: WeaponRifleXlr556
-      - id: Magazine762x51mmFMJ
+      - id: Magazine556x45mmEmpty
         amount: 2
-      - id: AmmoBox762x51mmFMJ
+      - id: AmmoBox556x45mmFMJ
 
 - type: entity
   id: WeaponCaseLongM90Bundle
@@ -115,7 +116,7 @@
   - type: StorageFill
     contents:
       - id: WeaponRifleM90
-      - id: Magazine762x51mmFMJ
+      - id: Magazine762x51mmEmpty
         amount: 2
       - id: AmmoBox762x51mmFMJ
 
@@ -127,7 +128,7 @@
   - type: StorageFill
     contents:
       - id: WeaponSubMachineGunFirestarter
-      - id: Magazine45_ACPSubMachineGunFMJ
+      - id: Magazine45_ACPSubMachineGunEmpty
         amount: 2
       - id: AmmoBox45_ACPFMJ
 
@@ -156,36 +157,36 @@
 - type: entity
   id: WeaponCaseLongLMGMR8BBundle
   parent: WeaponCaseHeavy
-  suffix: VFD MR-8B LWMMG 7.62x51mm
+  suffix: VFD MR-8B LWMMG 8x65mm SKR
   components:
   - type: StorageFill
     contents:
       - id: WeaponLMGMR8B
-      - id: Magazine8x65mmSKRBox
+      - id: Magazine8x65mmEmpty
         amount: 2
-      - id: Magazine8x65mmSKRBox
+      - id: Magazine8x65mmEmpty
 
 - type: entity
   id: WeaponCaseLongWt550Bundle
   parent: WeaponCaseLong
-  suffix: Wt550 9x19mm
+  suffix: Wt550 4.6x30mm
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponSubMachineGunWt550
-      - id: Magazine9x19mmSubMachineGunTopMountedFMJ
+      - id: WeaponSubMachineGunWt550
+      - id: Magazine46x30mmSubMachineGunTopMountedEmpty
         amount: 3
-      - id: AmmoBox9x19mmFMJ
+      - id: AmmoBox46x30mmFMJ
 
 - type: entity
   id: WeaponCaseLongEnforcerBundle
   parent: WeaponCaseLong
-  suffix: Enforcer 4 gauge
+  suffix: Enforcer 12 gauge
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponShotgunEnforcer
-      - id: AmmoBox23x75mmBuckshot
+      - id: WeaponShotgunEnforcer
+      - id: AmmoBox12_gaugeBuckshot
         amount: 3
 
 - type: entity
@@ -196,9 +197,9 @@
   components:
   - type: StorageFill
     contents:
-    - id: NFWeaponRifleSniperHristov
+    - id: WeaponSniperHristov
       amount: 1
-    - id: Magazine127x99mm
+    - id: AmmoBox145x114mm
       amount: 2
 
 - type: entity
@@ -209,9 +210,9 @@
   components:
   - type: StorageFill
     contents:
-    - id: NFWeaponPistolUniversal
+    - id: WeaponPistolMk32
       amount: 1
-    - id: Magazine9x19mmPistolFMJ
+    - id: Magazine9x19mmPistolEmpty
       amount: 2
 
 - type: entity
@@ -221,8 +222,8 @@
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponRevolverInspector
-      - id: SpeedLoader357_magnumFMJ
+      - id: WeaponRevolverInspector
+      - id: SpeedLoader357_magnumEmpty
         amount: 2
 
 - type: entity
@@ -232,8 +233,8 @@
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponPistolN1984
-      - id: Magazine45_ACPPistolFMJ
+      - id: WeaponPistolN1984
+      - id: Magazine45_ACPPistolEmpty
         amount: 2
 
 - type: entity
@@ -244,7 +245,7 @@
   - type: StorageFill
     contents:
       - id: WeaponRiflePrometheus
-      - id: Magazine556x45mmFMJ
+      - id: Magazine556x45mmEmpty
         amount: 3
       - id: AmmoBox556x45mmFMJ
 
@@ -256,7 +257,7 @@
   - type: StorageFill
     contents:
       - id: WeaponSubMachineGunKnallstock
-      - id: Magazine45_ACPSubMachineGunFMJ
+      - id: Magazine45_ACPPistolEmpty
         amount: 3
       - id: AmmoBox45_ACPFMJ
 
@@ -277,7 +278,7 @@
   - type: StorageFill
     contents:
       - id: WeaponSubMachineGunAK220
-      - id: Magazine9x19mmSubMachineGunFMJ
+      - id: Magazine9x19mmSubMachineGunEmpty
         amount: 3
       - id: AmmoBox9x19mmFMJ
 
@@ -288,22 +289,22 @@
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponRifleAssaultSm
-      - id: Magazine762x39mmFMJ
+      - id: WeaponRifleAk
+      - id: Magazine762x39mmEmpty
         amount: 3
       - id: AmmoBox762x39mmFMJ
 
 - type: entity
   id: WeaponCaseLongBulldogBundle
   parent: WeaponCaseLong
-  suffix: Bulldog 4 gauge
+  suffix: Bulldog 12 gauge
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponShotgunBulldog
-      - id: NFMagazineShotgunDrum
+      - id: WeaponShotgunBulldog
+      - id: Magazine12_gaugeEmpty
         amount: 3
-      - id: AmmoBox23x75mmBuckshot
+      - id: AmmoBox12_gaugeBuckshot
 
 - type: entity
   id: WeaponCaseLongHammerBundle
@@ -313,7 +314,7 @@
   - type: StorageFill
     contents:
       - id: WeaponLMGHammer
-      - id: Magazine68x52mmCaselessBig
+      - id: Magazine762x39mmBoxEmpty
         amount: 2
 
 - type: entity
@@ -324,9 +325,9 @@
   - type: StorageFill
     contents:
       - id: WeaponRifleWSPR
-      - id: Magazine762x39mmFMJ
+      - id: Magazine762x39mmEmpty
         amount: 3
-      - id: AmmoBox762x39mmFMJ
+      - id: AmmoBox762x39mmSubsonic
 
 - type: entity
   id: WeaponCaseShortRitlandBundle
@@ -335,8 +336,8 @@
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponRevolverRitland45
-      - id: SpeedLoader357_magnumFMJ
+      - id: WeaponRevolverPython
+      - id: SpeedLoader357_magnumEmpty
         amount: 2
 
 - type: entity
@@ -346,8 +347,8 @@
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponPistolViper
-      - id: Magazine9x19mmPistolFMJ
+      - id: WeaponPistolViper
+      - id: Magazine9x19mmPistolEmpty
         amount: 2
 
 - type: entity
@@ -358,21 +359,21 @@
   - type: StorageFill
     contents:
       - id: WeaponRifleAK410
-      - id: Magazine762x54mmRFMJ
+      - id: Magazine762x54mmREmpty
         amount: 3
       - id: AmmoBox762x54mmRFMJ
 
-- type: entity
-  id: WeaponCaseLongBurnerBundle
-  parent: WeaponCaseLong
-  suffix: Burner 7.62x54mmR
-  components:
-  - type: StorageFill
-    contents:
-      - id: WeaponRifleBurner
-      - id: Magazine762x54mmRFMJ
-        amount: 3
-      - id: AmmoBox762x54mmRFMJ
+# - type: entity
+#   id: WeaponCaseLongBurnerBundle
+#   parent: WeaponCaseLong
+#   suffix: Burner 12.7x99mm
+#   components:
+#   - type: StorageFill
+#     contents:
+#       - id: WeaponRifleBurner
+#       - id: Magazine127x99mm
+#         amount: 3
+#       - id: AmmoBox127x99mm
 
 - type: entity
   id: WeaponCaseLongAK502Bundle
@@ -382,19 +383,19 @@
   - type: StorageFill
     contents:
       - id: WeaponRifleAK502
-      - id: Magazine762x39mmFMJ
+      - id: Magazine762x39mmEmpty
         amount: 3
       - id: AmmoBox762x39mmFMJ
 
 - type: entity
   id: WeaponCaseShortCobraBundle
   parent: WeaponCaseShort
-  suffix: Cobra .45 ACP
+  suffix: Cobra 6.35x40mm caseless
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponPistolCobra
-      - id: Magazine45_ACPPistolFMJ
+      - id: WeaponPistolCobra
+      - id: Magazine635x40mmCaselessPistolEmpty
         amount: 2
 
 - type: entity
@@ -405,7 +406,7 @@
   - type: StorageFill
     contents:
       - id: ADTWeaponRifleXC67
-      - id: ADTExtMagazineRifle
+      - id: ADTExtMagazineRifleEmpty
         amount: 3
       - id: AmmoBox556x45mmFMJ
 
@@ -416,20 +417,20 @@
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponSubMachineGunC20r
-      - id: Magazine9x19mmSubMachineGunFMJ
+      - id: WeaponSubMachineGunC20r
+      - id: Magazine9x19mmSubMachineGunEmpty
         amount: 3
       - id: AmmoBox9x19mmFMJ
 
 - type: entity
   id: WeaponCaseLongL6Bundle
   parent: WeaponCaseHeavy
-  suffix: L6 5.56x45mm
+  suffix: L6 7.62x39mm
   components:
   - type: StorageFill
     contents:
-      - id: NFWeaponLightMachineGunL6
-      - id: Magazine556x45mmFMJ
+      - id: WeaponLightMachineGunL6
+      - id: Magazine762x39mmBoxEmpty
         amount: 2
 
 - type: entity
@@ -440,7 +441,7 @@
   - type: StorageFill
     contents:
       - id: WeaponSubMachineGunMla73
-      - id: Magazine635x40mmCaseless
+      - id: Magazine635x40mmCaselessEmpty
         amount: 3
       - id: AmmoBox635x40mmCaseless
 
@@ -463,5 +464,6 @@
   - type: StorageFill
     contents:
       - id: WeaponLMGRatel
-      - id: Magazine8x65mmSKRBox
+      - id: AmmoBox762x51mmFMJ
         amount: 2
+      - id: Magazine762x51mmEmpty

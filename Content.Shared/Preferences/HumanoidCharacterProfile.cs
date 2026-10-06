@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Content.Shared._Mono.Company;
 using Content.Shared._NF.Bank;
 using Content.Shared.CCVar;
+using Content.Shared.Corvax.CCCVars;
 using Content.Shared.Corvax.TTS;
 using Content.Shared.GameTicking;
 using Content.Shared.Humanoid;
@@ -10,7 +11,7 @@ using Content.Shared.Humanoid.Prototypes;
 using Content.Shared.Preferences.Loadouts;
 using Content.Shared.Roles;
 using Content.Shared.Traits;
-using Content.Shared._Lua.ERP;
+using Content.Shared.ERP;
 using Robust.Shared.Collections;
 using Robust.Shared.Configuration;
 using Robust.Shared.Enums;
@@ -19,7 +20,7 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Serialization;
 using Robust.Shared.Utility;
-using Content.Shared.Lua.CLVar;
+using Content.Lua.Common.CLVar;
 
 namespace Content.Shared.Preferences
 {
@@ -135,7 +136,7 @@ namespace Content.Shared.Preferences
         public Gender Gender { get; private set; } = Gender.Male;
 
         [DataField] // Frontier: Bank balance
-        public int BankBalance { get; private set; } = DefaultBalance; // Frontier: Bank balance
+        public int BankBalance { get; private set; } = 0; // Frontier: unused on character; account bank is PlayerPreferences.BankBalance
 
             // YUPI: Persistent per-slot account code (6 chars A-Z, excluding I/O, and digits 1-9). Uppercase stored. //Lua
     [DataField]
@@ -327,7 +328,7 @@ namespace Content.Shared.Preferences
         }
 
         // TODO: This should eventually not be a visual change only.
-        public static HumanoidCharacterProfile Random(HashSet<string>? ignoredSpecies = null, int balance = DefaultBalance)
+        public static HumanoidCharacterProfile Random(HashSet<string>? ignoredSpecies = null, int balance = 0)
         {
             var prototypeManager = IoCManager.Resolve<IPrototypeManager>();
             var random = IoCManager.Resolve<IRobustRandom>();
@@ -341,7 +342,7 @@ namespace Content.Shared.Preferences
             return RandomWithSpecies(species: species, balance: balance);
         }
 
-        public static HumanoidCharacterProfile RandomWithSpecies(string? species = null, int balance = DefaultBalance) // Frontier: add balance arg
+        public static HumanoidCharacterProfile RandomWithSpecies(string? species = null, int balance = 0) // Frontier: add balance arg; account bank is separate
         {
             species ??= SharedHumanoidAppearanceSystem.DefaultSpecies;
 
@@ -357,10 +358,13 @@ namespace Content.Shared.Preferences
             }
 
             // Corvax-TTS-Start
-            var voiceId = random.Pick(prototypeManager
-                .EnumeratePrototypes<TTSVoicePrototype>()
-                .Where(o => CanHaveVoice(o, sex) && !o.SponsorOnly).ToArray()
-            ).ID;
+            var ntts = IoCManager.Resolve<IConfigurationManager>().GetCVar(Content.Shared.Corvax.CCCVars.CCCVars.TTSNtts);
+            var voiceChoices = TTSVoiceListing.EnumerateForBackend(prototypeManager, ntts)
+                .Where(o => CanHaveVoice(o, sex) && !o.SponsorOnly)
+                .ToArray();
+            var voiceId = voiceChoices.Length > 0
+                ? random.Pick(voiceChoices).ID
+                : TTSVoiceListing.PickDefaultVoiceId(prototypeManager, ntts, sex);
             // Corvax-TTS-End
 
             var gender = Gender.Epicene;
@@ -1042,8 +1046,9 @@ namespace Content.Shared.Preferences
 
             // Corvax-TTS-Start
             prototypeManager.TryIndex<TTSVoicePrototype>(Voice, out var voice);
-            if (voice is null || !CanHaveVoice(voice, Sex))
-                Voice = SharedHumanoidAppearanceSystem.DefaultSexVoice[sex];
+            var ntts = IoCManager.Resolve<IConfigurationManager>().GetCVar(Content.Shared.Corvax.CCCVars.CCCVars.TTSNtts);
+            if (voice is null || !CanHaveVoice(voice, Sex) || !TTSVoiceListing.MatchesBackend(voice, ntts))
+                Voice = TTSVoiceListing.PickDefaultVoiceId(prototypeManager, ntts, Sex);
             // Corvax-TTS-End
         }
 

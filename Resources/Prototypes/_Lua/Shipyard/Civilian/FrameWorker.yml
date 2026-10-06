@@ -8,7 +8,8 @@
   parent: BaseVessel
   name: FrameWorker
   description: Небольшой шаттл, часто используемый для недалёкого полёта, или используемый как основу для строительства шаттлов и станций.
-  price: 18814
+  price: 20815
+  mass: 507.5
   category: Micro
   group: Shipyard
   shuttlePath: /Maps/_Lua/Shuttles/Civilian/FrameWorker.yml

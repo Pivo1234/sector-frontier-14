@@ -11,9 +11,13 @@
     sprite: _Lua/Sponsor/Lua/Lua_White/Clothing/Head/Misc/lua_head.rsi
   - type: Clothing
     sprite: _Lua/Sponsor/Lua/Lua_White/Clothing/Head/Misc/lua_head.rsi
+    slots:
+    - hairpin
+  - type: Item
+    size: Tiny
 
 - type: entity
-  parent: ClothingHandsGlovesCombat
+  parent: RingBase
   id: HacksHandsRing
   name: Кольцо Хакса
   description: Обручальное кольцо Хакса, напоминает вам о теплых временах и о Айрис.
@@ -21,13 +25,14 @@
   components:
   - type: Sprite
     sprite: _Lua/Sponsor/Lua/Lua_White/Clothing/Hands/Misc/lua_ring.rsi
+    state: icon
   - type: Clothing
     sprite: _Lua/Sponsor/Lua/Lua_White/Clothing/Hands/Misc/lua_ring.rsi
-  - type: Item
-    size: Tiny
+    equippedState: equipped-FINGER
 
 - type: entity
-  parent: [ ClothingShoesBootsMag, GasTankBase ]
+  # parent: [ ClothingShoesBootsMag, GasTankBase ]
+  parent: ClothingShoesBootsMag
   id: ClothingShoesBootsLua
   name: улучшенные магнитные подковы "LuaTech"
   description: Магнитные подковы разработанные в LuaTech совместимые со многими скафандрами.
@@ -40,28 +45,28 @@
         map: [ "enum.ToggleableVisuals.Layer" ]
     - type: Clothing
       sprite: _Lua/Sponsor/Lua/Lua_White/Clothing/Shoes/Boots/lua_magboots.rsi
-    - type: GasTank
-      outputPressure: 42.6
-      air:
-        volume: 70
-        temperature: 293.15
-        moles:
-        - 11.315
-        - 11.315
-    - type: ActivatableUI
-      key: enum.SharedGasTankUiKey.Key
-    - type: UserInterface
-      interfaces:
-        enum.SharedGasTankUiKey.Key:
-          type: GasTankBoundUserInterface
-    - type: Explosive
-      explosionType: Default
-      maxIntensity: 20
-    - type: Jetpack
-      moleUsage: 0.00085
-      toggleAction: ActionToggleADTJetpack
-    - type: CanMoveInAir
-    - type: InputMover
+    # - type: GasTank
+    #   outputPressure: 42.6
+    #   air:
+    #     volume: 70
+    #     temperature: 293.15
+    #     moles:
+    #     - 11.315
+    #     - 11.315
+    # - type: ActivatableUI
+    #   key: enum.SharedGasTankUiKey.Key
+    # - type: UserInterface
+    #   interfaces:
+    #     enum.SharedGasTankUiKey.Key:
+    #       type: GasTankBoundUserInterface
+    # - type: Explosive
+    #   explosionType: Default
+    #   maxIntensity: 20
+    # - type: Jetpack
+    #   moleUsage: 0.00085
+    #   toggleAction: ActionToggleADTJetpack
+    # - type: CanMoveInAir
+    # - type: InputMover
     - type: ClothingSpeedModifier
       walkModifier: 1
       sprintModifier: 1
@@ -81,6 +86,9 @@
       spinupTime: 1
       breakCooldown: 15
       powerDraw: 0.5
+      blockModifier:
+        coefficients:
+          Asphyxiation: 0
   - type: Sprite
     sprite: _Lua/Sponsor/Lua/Lua_White/Clothing/Neck/Cloaks/lua_cape.rsi
 
@@ -99,6 +107,9 @@
       spinupTime: 1
       breakCooldown: 15
       powerDraw: 0.5
+      blockModifier:
+        coefficients:
+          Asphyxiation: 0
   - type: Sprite
     sprite: _Lua/Sponsor/Lua/Lua_Black/Clothing/Neck/Cloaks/lua_cape_black.rsi
 

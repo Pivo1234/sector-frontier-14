@@ -105,11 +105,9 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: StationGrid
       dampingModifier: 0.25
     - type: GridPathfinding
-    - type: BecomesStation
-      id: Bahama
     - type: Gravity
       gravityShakeSound: !type:SoundPathSpecifier
         path: /Audio/Effects/alert.ogg

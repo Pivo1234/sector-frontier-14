@@ -52,8 +52,6 @@ entities:
     - type: Transform
       pos: -0.59375,-0.5625
       parent: invalid
-    - type: BecomesStation
-      id: Sauron
     - type: MapGrid
       chunks:
         0,0:
@@ -99,7 +97,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: ShuttleGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity

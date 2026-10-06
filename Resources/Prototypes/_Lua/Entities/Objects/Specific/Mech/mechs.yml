@@ -45,11 +45,12 @@
   - type: MovementSpeedModifier
     baseWalkSpeed: 3.00
     baseRunningSpeed: 4.0
+    baseSprintSpeed: 4.0
   - type: Reflect
     reflectProb: 0.25
   - type: PointLight
     enabled: false
-    mask: /Textures/Effects/LightMasks/cone.png
+    lightMask: LightMaskCone
     autoRot: true
     radius: 8
     energy: 4

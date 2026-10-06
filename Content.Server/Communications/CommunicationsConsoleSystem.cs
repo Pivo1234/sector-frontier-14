@@ -5,6 +5,7 @@ using Content.Server.DeviceNetwork.Systems;
 using Content.Server.Popups;
 using Content.Server.RoundEnd;
 using Content.Server.Screens.Components;
+using Content.Server.Shuttles.Events;
 using Content.Server.Shuttles.Systems;
 using Content.Server.Station.Systems;
 using Content.Shared.Access.Components;
@@ -19,7 +20,9 @@ using Content.Shared.IdentityManagement;
 using Content.Shared.Popups;
 using Robust.Server.GameObjects;
 using Robust.Shared.Configuration;
+using Robust.Shared.Map;
 using Content.Server._NF.SectorServices; // Frontier
+using Content.Lua.Shared.Announce;
 
 namespace Content.Server.Communications
 {
@@ -56,6 +59,19 @@ namespace Content.Server.Communications
 
             // On console init, set cooldown
             SubscribeLocalEvent<CommunicationsConsoleComponent, MapInitEvent>(OnCommunicationsConsoleMapInit);
+            SubscribeLocalEvent<FTLCompletedEvent>(OnFTLCompleted);
+        }
+
+        private void OnFTLCompleted(ref FTLCompletedEvent args)
+        {
+            var query = EntityQueryEnumerator<CommunicationsConsoleComponent, TransformComponent>();
+            while (query.MoveNext(out var uid, out var comp, out var xform))
+            {
+                if (xform.GridUid != args.Entity)
+                    continue;
+
+                UpdateCommsConsoleInterface(uid, comp);
+            }
         }
 
         public override void Update(float frameTime)
@@ -107,11 +123,11 @@ namespace Content.Server.Communications
         /// <param name="args">Alert level changed event arguments</param>
         private void OnAlertLevelChanged(AlertLevelChangedEvent args)
         {
-            var query = EntityQueryEnumerator<CommunicationsConsoleComponent>();
-            while (query.MoveNext(out var uid, out var comp))
+            var query = EntityQueryEnumerator<CommunicationsConsoleComponent, TransformComponent>();
+            while (query.MoveNext(out var uid, out var comp, out var xform))
             {
-                // var entStation = _stationSystem.GetOwningStation(uid); // Frontier: sector-wide alerts
-                // if (args.Station == entStation) // Frontier: sector-wide alerts
+                if (xform.MapID != args.MapId)
+                    continue;
                 UpdateCommsConsoleInterface(uid, comp);
             }
         }
@@ -133,15 +149,13 @@ namespace Content.Server.Communications
         /// </summary>
         public void UpdateCommsConsoleInterface(EntityUid uid, CommunicationsConsoleComponent comp)
         {
-            //var stationUid = _stationSystem.GetOwningStation(uid); // Frontier: sector-wide alerts
-            var stationUid = _sectorService.GetServiceEntity(); // Frontier: sector-wide alerts
             List<string>? levels = null;
             string currentLevel = default!;
             float currentDelay = 0;
 
-            if (stationUid.Valid) // Frontier: != null < .Valid
+            if (_sectorService.TryGetServiceEntity(uid, out var stationUid) && stationUid.Valid)
             {
-                if (TryComp(stationUid, out AlertLevelComponent? alertComp) && // Frontier: stationUid.Value<stationUid
+                if (TryComp(stationUid, out AlertLevelComponent? alertComp) &&
                     alertComp.AlertLevels != null)
                 {
                     if (alertComp.IsSelectable)
@@ -157,7 +171,7 @@ namespace Content.Server.Communications
                     }
 
                     currentLevel = alertComp.CurrentLevel;
-                    currentDelay = _alertLevelSystem.GetAlertLevelDelay(stationUid, alertComp); // Frontier: stationUid.Value<stationUid
+                    currentDelay = _alertLevelSystem.GetAlertLevelDelay(stationUid, alertComp);
                 }
             }
 
@@ -233,7 +247,6 @@ namespace Content.Server.Communications
         {
             var maxLength = _cfg.GetCVar(CCVars.ChatMaxAnnouncementLength);
             var msg = SharedChatSystem.SanitizeAnnouncement(message.Message, maxLength);
-            var author = Loc.GetString("comms-console-announcement-unknown-sender");
             if (message.Actor is { Valid: true } mob)
             {
                 if (!CanAnnounce(comp))
@@ -246,10 +259,6 @@ namespace Content.Server.Communications
                     _popupSystem.PopupEntity(Loc.GetString("comms-console-permission-denied"), uid, message.Actor);
                     return;
                 }
-
-                var tryGetIdentityShortInfoEvent = new TryGetIdentityShortInfoEvent(uid, mob);
-                RaiseLocalEvent(tryGetIdentityShortInfoEvent);
-                author = tryGetIdentityShortInfoEvent.Title;
             }
 
             comp.AnnouncementCooldownRemaining = comp.Delay;
@@ -261,21 +270,29 @@ namespace Content.Server.Communications
             // allow admemes with vv
             Loc.TryGetString(comp.Title, out var title);
             title ??= comp.Title;
+            var overlayTitle = ResolveCommsOverlayTitle(uid);
 
-            if (comp.AnnounceSentBy)
-                msg += "\n" + Loc.GetString("comms-console-announcement-sent-by") + " " + author;
+            EntityUid? speaker = message.Actor is { Valid: true } ? message.Actor : null;
 
             if (comp.Global)
             {
-                _chatSystem.DispatchGlobalAnnouncement(msg, title, announcementSound: comp.Sound, colorOverride: comp.Color);
+                _chatSystem.DispatchGlobalAnnouncement(msg, overlayTitle, announcementSound: comp.Sound, colorOverride: comp.Color, speaker: speaker, announcementPreset: AnnouncementOverlayParams.PresetComms);
 
                 _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following global announcement: {msg}");
                 return;
             }
 
-            _chatSystem.DispatchStationAnnouncement(uid, msg, title, colorOverride: comp.Color);
+            var mapId = Transform(uid).MapID;
+            if (mapId == MapId.Nullspace)
+            {
+                _chatSystem.DispatchStationAnnouncement(uid, msg, overlayTitle, colorOverride: comp.Color, speaker: speaker, announcementPreset: AnnouncementOverlayParams.PresetComms);
+                _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following station announcement: {msg}");
+                return;
+            }
 
-            _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following station announcement: {msg}");
+            _chatSystem.DispatchMapAnnouncement(mapId, msg, overlayTitle, playSound: true, announcementSound: comp.Sound, colorOverride: comp.Color, speaker: speaker, announcementPreset: AnnouncementOverlayParams.PresetComms);
+
+            _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following map announcement on {mapId}: {msg}");
 
         }
 
@@ -343,6 +360,27 @@ namespace Content.Server.Communications
 
             _roundEndSystem.CancelRoundEndCountdown(uid);
             _adminLogger.Add(LogType.Action, LogImpact.High, $"{ToPrettyString(message.Actor):player} has recalled the shuttle.");
+        }
+
+        private string ResolveCommsOverlayTitle(EntityUid consoleUid)
+        {
+            var stationUid = _stationSystem.GetOwningStation(consoleUid);
+            if (stationUid != null)
+            {
+                var stationName = MetaData(stationUid.Value).EntityName;
+                if (!string.IsNullOrWhiteSpace(stationName))
+                    return Loc.GetString("lua-announcement-title-comms-station", ("station", stationName.ToUpperInvariant()));
+            }
+
+            var gridUid = Transform(consoleUid).GridUid;
+            if (gridUid != null)
+            {
+                var gridName = MetaData(gridUid.Value).EntityName;
+                if (!string.IsNullOrWhiteSpace(gridName))
+                    return Loc.GetString("lua-announcement-title-comms-station", ("station", gridName.ToUpperInvariant()));
+            }
+
+            return Loc.GetString("lua-announcement-title-comms-fallback");
         }
     }
 

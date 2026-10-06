@@ -1,6 +1,7 @@
 using Content.Shared._NF.Bank;
+using Content.Shared._NF.Bank.Components;
 using System.Linq;
-using Content.Server._NF.Bank;
+using Content.Lua.Shared.Bank;
 using System.Numerics;
 using Content.Server.Cargo.Systems;
 //using Content.Server.Emp; // Frontier: Upstream - #28984
@@ -34,7 +35,6 @@ using Content.Server._NF.Contraband.Systems; // Frontier
 using Content.Shared.Stacks; // Frontier
 using Content.Server.Stack; // Frontier
 using Robust.Shared.Containers; // Frontier
-using Content.Shared._NF.Bank.Components; // Frontier
 
 namespace Content.Server.VendingMachines
 {
@@ -46,7 +46,7 @@ namespace Content.Server.VendingMachines
         [Dependency] private readonly IGameTiming _timing = default!;
 
         [Dependency] private readonly SharedAudioSystem _audioSystem = default!; // Frontier
-        [Dependency] private readonly BankSystem _bankSystem = default!; // Frontier
+        [Dependency] private readonly IBankSystem _bankSystem = default!; // Frontier
         [Dependency] private readonly PopupSystem _popupSystem = default!; // Frontier
         [Dependency] private readonly IAdminLogManager _adminLogger = default!; // Frontier
         [Dependency] private readonly ContrabandTurnInSystem _contraband = default!; // Frontier
@@ -72,6 +72,11 @@ namespace Content.Server.VendingMachines
             SubscribeLocalEvent<VendingMachineComponent, RestockDoAfterEvent>(OnDoAfter);
 
             SubscribeLocalEvent<VendingMachineRestockComponent, PriceCalculationEvent>(OnPriceCalculation);
+
+            Subs.BuiEvents<VendingMachineComponent>(VendingMachineUiKey.Key, subs =>
+            {
+                subs.Event<VendingMachineRequestBalanceMessage>(OnRequestBalance);
+            });
         }
 
         private void OnVendingPrice(EntityUid uid, VendingMachineComponent component, ref PriceCalculationEvent args)
@@ -106,6 +111,30 @@ namespace Content.Server.VendingMachines
         {
             if (component.Broken)
                 args.Cancel();
+        }
+
+        private void OnRequestBalance(EntityUid uid, VendingMachineComponent component, VendingMachineRequestBalanceMessage args)
+        {
+            PushBalance(uid, args.Actor);
+        }
+
+        public void PushBalance(EntityUid uid, EntityUid actor)
+        {
+            _bankSystem.TryGetBalance(actor, out var balance);
+            UISystem.ServerSendUiMessage(uid, VendingMachineUiKey.Key, new VendingMachineBalanceMessage(balance), actor);
+        }
+
+        private void SendBalance(EntityUid uid, EntityUid actor) => PushBalance(uid, actor);
+
+        protected override void UpdateUI(Entity<VendingMachineComponent?> entity)
+        {
+            if (!Resolve(entity, ref entity.Comp, false))
+                return;
+
+            foreach (var actor in UISystem.GetActors(entity.Owner, VendingMachineUiKey.Key))
+            {
+                SendBalance(entity.Owner, actor);
+            }
         }
 
         private void OnPowerChanged(EntityUid uid, VendingMachineComponent component, ref PowerChangedEvent args)
@@ -413,8 +442,7 @@ namespace Content.Server.VendingMachines
             if (IsAuthorized(uid, sender, component))
             {
                 int bankBalance = 0;
-                if (TryComp<BankAccountComponent>(sender, out var bank))
-                    bankBalance = bank.Balance;
+                _bankSystem.TryGetBalance(sender, out bankBalance);
 
                 int cashSlotBalance = 0;
                 Entity<StackComponent>? cashEntity = null;
@@ -458,12 +486,13 @@ namespace Content.Server.VendingMachines
                             if (!float.IsFinite(taxCoeff) || taxCoeff <= 0.0f)
                                 continue;
                             var tax = (int)Math.Floor(totalPrice * taxCoeff);
-                            _bankSystem.TrySectorDeposit(account, tax, LedgerEntryType.VendorTax);
+                            _bankSystem.TrySectorDeposit(account, tax, LedgerEntryType.VendorTax, uid);
                         }
                     }
 
                     // Something was ejected, update the vending component's state
                     Dirty(uid, component);
+                    SendBalance(uid, sender);
 
                     _adminLogger.Add(LogType.Action, LogImpact.Low,
                         $"{ToPrettyString(sender):user} bought from [vendingMachine:{ToPrettyString(uid)}, product:{proto.Name}, cost:{totalPrice},  with ${cashSlotBalance} in the cash slot and ${bankBalance} in the bank.");

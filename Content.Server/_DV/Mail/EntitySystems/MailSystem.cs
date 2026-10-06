@@ -41,7 +41,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using Timer = Robust.Shared.Timing.Timer;
-using Content.Server._NF.Bank; // Frontier
+using Content.Lua.Shared.Bank; // Frontier
 using Content.Server._NF.SectorServices; // Frontier
 using Content.Server.Station.Components; // Frontier
 using Robust.Shared.Enums; // Frontier
@@ -76,7 +76,7 @@ namespace Content.Server._DV.Mail.EntitySystems
         [Dependency] private readonly LogisticStatsSystem _logisticsStatsSystem = default!;
         [Dependency] private readonly EmagSystem _emag = default!;
         [Dependency] private readonly SectorServiceSystem _sectorService = default!; // Frontier
-        [Dependency] private readonly BankSystem _bank = default!; // Frontier
+        [Dependency] private readonly IBankSystem _bank = default!; // Frontier
         [Dependency] private readonly PowerReceiverSystem _powerReceiver = default!; // Frontier
         [Dependency] private readonly IPlayerManager _player = default!; // Frontier
 
@@ -240,7 +240,7 @@ namespace Content.Server._DV.Mail.EntitySystems
             _popupSystem.PopupEntity(Loc.GetString("mail-unlocked-reward", ("bounty", component.Bounty)), uid, args.User); // Frontier - Remove the mention of station income
             component.IsProfitable = false;
 
-            _bank.TrySectorDeposit(SectorBankAccount.Frontier, component.Bounty, LedgerEntryType.MailDelivered);
+            _bank.TrySectorDeposit(SectorBankAccount.Frontier, component.Bounty, LedgerEntryType.MailDelivered, uid);
         }
 
         private void OnExamined(EntityUid uid, MailComponent component, ExaminedEvent args)

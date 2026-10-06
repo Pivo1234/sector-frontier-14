@@ -3,13 +3,16 @@ using System.Runtime.CompilerServices;
 using Content.Server.Physics.Components;
 using Content.Server.Shuttles.Components;
 using Content.Server.Shuttles.Systems;
-using Content.Server._Lua.Shuttles.Systems; // Lua
-using Content.Server._Lua.SpaceHazards;
+using Content.Shared.Shuttles;
+using Content.Lua.Shared.Shuttles.Components;
+using Content.Shared.SpaceHazards;
 using Content.Shared.Friction;
 using Content.Shared.Movement.Components;
 using Content.Shared.Movement.Systems;
 using Content.Shared.Shuttles.Components;
 using Content.Shared.Shuttles.Systems;
+using Content.Lua.Shared.SpaceHazards;
+using Content.Lua.Shared.Shuttles;
 using Content.Shared.Ghost; // Frontier
 using Prometheus;
 using Robust.Shared.Physics.Components;
@@ -29,18 +32,17 @@ public sealed class MoverController : SharedMoverController
 
     [Dependency] private readonly ThrusterSystem _thruster = default!;
     [Dependency] private readonly SharedTransformSystem _xformSystem = default!;
-    [Dependency] private readonly ShuttleTabletSystem _tablet = default!; // Lua
-    [Dependency] private readonly NebulaEnvironmentSystem _nebulaEnvironment = default!;
+    [Dependency] private readonly IShuttleTabletSystem _tablet = default!;
+    [Dependency] private readonly INebulaEnvironmentSystem _nebulaEnvironment = default!;
+    [Dependency] private readonly IShuttleGridAccessSystem _gridAccess = default!;
 
-    private EntityQuery<ShuttleComponent> _shuttleQuery;
     private EntityQuery<TransformComponent> _xformQuery;
 
-    private Dictionary<EntityUid, (ShuttleComponent, List<(EntityUid, PilotComponent, InputMoverComponent, TransformComponent)>)> _shuttlePilots = new();
+    private Dictionary<EntityUid, (IShuttleGrid Grid, List<(EntityUid, PilotComponent, InputMoverComponent, TransformComponent)>)> _shuttlePilots = new();
 
     public override void Initialize()
     {
         base.Initialize();
-        _shuttleQuery = GetEntityQuery<ShuttleComponent>();
         _xformQuery = GetEntityQuery<TransformComponent>();
         SubscribeLocalEvent<RelayInputMoverComponent, PlayerAttachedEvent>(OnRelayPlayerAttached);
         SubscribeLocalEvent<RelayInputMoverComponent, PlayerDetachedEvent>(OnRelayPlayerDetached);
@@ -288,7 +290,7 @@ public sealed class MoverController : SharedMoverController
     /// <summary>
     /// Get a shuttle's angular acceleration.
     /// </summary>
-    public float GetAngularAcceleration(ShuttleComponent shuttle, PhysicsComponent body)
+    public float GetAngularAcceleration(IShuttleGrid shuttle, PhysicsComponent body)
     {
         return shuttle.AngularThrust * body.InvI;
     }
@@ -297,7 +299,7 @@ public sealed class MoverController : SharedMoverController
     /// Get shuttle thrust in a given direction.
     /// Takes local direction.
     /// </summary>
-    public Vector2 GetDirectionThrust(Vector2 dir, ShuttleComponent shuttle, PhysicsComponent body)
+    public Vector2 GetDirectionThrust(Vector2 dir, IShuttleGrid shuttle, PhysicsComponent body)
     {
         if (dir.Length() == 0f)
             return Vector2.Zero;
@@ -321,7 +323,7 @@ public sealed class MoverController : SharedMoverController
     /// <summary>
     /// Helper function to extrapolate max velocity for a given Vector2 (really, its angle) and shuttle.
     /// </summary>
-    private Vector2 ObtainMaxVel(Vector2 vel, ShuttleComponent shuttle)
+    private Vector2 ObtainMaxVel(Vector2 vel, IShuttleGrid shuttle)
     {
         if (vel.Length() == 0f)
             return Vector2.Zero;
@@ -343,7 +345,7 @@ public sealed class MoverController : SharedMoverController
 
     private void HandleShuttleMovement(float frameTime)
     {
-        var newPilots = new Dictionary<EntityUid, (ShuttleComponent Shuttle, List<(EntityUid PilotUid, PilotComponent Pilot, InputMoverComponent Mover, TransformComponent ConsoleXform)>)>();
+        var newPilots = new Dictionary<EntityUid, (IShuttleGrid Grid, List<(EntityUid PilotUid, PilotComponent Pilot, InputMoverComponent Mover, TransformComponent ConsoleXform)>)>();
 
         // We just mark off their movement and the shuttle itself does its own movement
         var activePilotQuery = EntityQueryEnumerator<PilotComponent, InputMoverComponent>();
@@ -362,7 +364,8 @@ public sealed class MoverController : SharedMoverController
             var gridId = _tablet.GetTabletGrid(consoleEnt) ?? xform.GridUid; // Lua
             // This tries to see if the grid is a shuttle and if the console should work.
             if (!TryComp<MapGridComponent>(gridId, out var _) ||
-                !_shuttleQuery.TryGetComponent(gridId, out var shuttleComponent) ||
+                !_gridAccess.IsPilotableGrid(gridId.Value) ||
+                !_gridAccess.TryGetShuttleGrid(gridId.Value, out var shuttleComponent) ||
                 !shuttleComponent.Enabled)
                 continue;
 
@@ -416,10 +419,10 @@ public sealed class MoverController : SharedMoverController
 
     private void HandlePilotedShuttleMovement(float frameTime)
     {
-        var shuttleQuery = EntityQueryEnumerator<ShuttleComponent, PilotedShuttleComponent, PhysicsComponent>();
-        while (shuttleQuery.MoveNext(out var uid, out var shuttle, out var piloted, out var body))
+        var shuttleQuery = EntityQueryEnumerator<PilotedShuttleComponent, PhysicsComponent>();
+        while (shuttleQuery.MoveNext(out var uid, out var piloted, out var body))
         {
-            if (Paused(uid) || CanPilot(uid))
+            if (Paused(uid) || CanPilot(uid) || !_gridAccess.TryGetShuttleGrid(uid, out var shuttle))
                 continue;
 
             var inputs = new List<ShuttleInput>();
@@ -544,7 +547,7 @@ public sealed class MoverController : SharedMoverController
                         force.Y -= shuttle.LinearThrust[index];
                     }
 
-                    var impulse = force * brakeInput * ShuttleComponent.BrakeCoefficient * _nebulaEnvironment.GetThrustMultiplier(uid);
+                    var impulse = force * brakeInput * ShuttleGridConstants.BrakeCoefficient * _nebulaEnvironment.GetThrustMultiplier(uid);
                     impulse = shuttleNorthAngle.RotateVec(impulse);
                     var forceMul = frameTime * body.InvMass;
                     var maxVelocity = (-body.LinearVelocity).Length() / forceMul;
@@ -561,7 +564,7 @@ public sealed class MoverController : SharedMoverController
 
                 if (body.AngularVelocity != 0f)
                 {
-                    var torque = shuttle.AngularThrust * brakeInput * (body.AngularVelocity > 0f ? -1f : 1f) * ShuttleComponent.BrakeCoefficient;
+                    var torque = shuttle.AngularThrust * brakeInput * (body.AngularVelocity > 0f ? -1f : 1f) * ShuttleGridConstants.BrakeCoefficient;
                     var torqueMul = body.InvI * frameTime;
 
                     if (body.AngularVelocity > 0f)
@@ -689,7 +692,7 @@ public sealed class MoverController : SharedMoverController
                 var torque = shuttle.AngularThrust * -angularInput;
 
                 var torqueMul = body.InvI * frameTime;
-                var maxAngular = ShuttleComponent.MaxAngularVelocity;
+                var maxAngular = ShuttleGridConstants.MaxAngularVelocity;
                 if (setMaxAngular is { } ang)
                     maxAngular = MathF.Min(maxAngular, MathF.Max(0f, ang));
 

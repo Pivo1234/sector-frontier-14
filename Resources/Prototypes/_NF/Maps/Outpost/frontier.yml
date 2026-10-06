@@ -1,18 +1,21 @@
 - type: gameMap
   id: Frontier
   mapName: 'Сектор Фронтир'
-  mapPath: /Maps/_Lua/Outpost/frontier.yml
+  mapPath: /Maps/_Lua/Outpost/Horizon.yml
+  isGrid: true
   minPlayers: 0
   maxPlayers: 100
   randomRotation: false
   maxRandomOffset: 0
   stations:
     Frontier:
-      stationProto: StandardFrontierStation
+      # stationProto: StandardFrontierStation
+      stationProto: StandardHorizonStation
       # Lua add start
       gridComponents:
       - type: VesselMusic
-        ambientMusicPrototype: ColossusCentralMusic
+        # ambientMusicPrototype: ColossusCentralMusic #25Hydra08: поменял музыку на другую.
+        ambientMusicPrototype: HorizonMusic
       - type: VesselInfo
         description: "Хотя бы здесь вы можете почувствовать себя в безопасности."
       # Lua add end
@@ -20,6 +23,8 @@
         - type: FactionCapture
           captureWholeStation: true
         - type: FrontierParking # Lua
+        - type: BecomesStation
+          id: Frontier
         - type: RadarBlipIcon
           icon: /Textures/_Lua/Interface/Radar/space-station.png
           scale: 1.2
@@ -27,7 +32,7 @@
         - type: FactionOwnedStation
           mainBase: true
         - type: StationNameSetup
-          mapNameTemplate: 'Станция Фронтир'
+          mapNameTemplate: 'Исследовательское судно Горизонт' #25Hydra08: "Станция Фронтир" > "Исследовательское судно Горизонт"
 #          nameGenerator:
 #            !type:NanotrasenNameGenerator
 #            prefixCreator: '14'
@@ -42,8 +47,8 @@
             Vip: [ -1, -1 ]
             #Contractor: [ -1, -1 ]
             Pilot: [ -1, -1 ]
-            #MedicalDoctor: [ 1, 1 ]
-            #Chemist: [ 1, 1 ]
+            MedicalDoctor: [ 1, 1 ]
+            Chemist: [ 1, 1 ]
             #Borg: [ -1, -1 ]
             StationRepresentative: [ 1, 1 ]
             StationTrafficController: [ 1, 1 ]

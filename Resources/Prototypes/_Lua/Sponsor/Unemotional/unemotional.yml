@@ -1,18 +1,4 @@
 # Cloak
-- type: sponsorLoadout
-  id: unemotional
-  ownerLogin: unemotional
-  tier: god
-  entities:
-    - ClothingBackpackdeFoA
-    - ClothingOuterHardsuitdeFOA
-    - ClothingMaskdeFOA
-    - GlovesdeFOA
-    - ClothingBeltdeFOA
-    - ClothingEyesHuddeFOA
-    - ClothingShoesBootsdeFOA
-    - ClothingUniformdeFOA
-    - ClothingNeckCapedeFOA
 
 - type: entity
   parent: ClothingNeckBase
@@ -169,17 +155,23 @@
   - type: Clothing
     sprite: _Lua/Sponsor/unemotional/hardsuit.rsi
   - type: ToggleableClothing
-    clothingPrototype: ClothingHeadHelmetHardsuitdeFOA
+    requiredSlot: outerclothing
+    blockUnequipWhenAttached: false
+    replaceCurrentClothing: true
+    clothingPrototypes:
+      head: ClothingHeadHelmetHardsuitdeFOA
+      helmetcover: ClothingHeadHelmetCoverBlock
+      helmetattachment: ClothingHeadHelmetAttachmentBlock
   - type: ContainerContainer
     containers:
-      toggleable-clothing: !type:ContainerSlot
+      toggleable-clothing: !type:Container
+      storagebase: !type:Container
+        ents: []
         showEnts: false
         occludes: true
-        ent: null
       cell_slot: !type:ContainerSlot
         showEnts: false
         occludes: true
-        ent: null
   - type: Item
     size: Huge
   - type: PressureProtection
@@ -188,12 +180,13 @@
   - type: Armor
     modifiers:
       coefficients:
-        Blunt: 0.65
-        Slash: 0.65
-        Piercing: 0.6
-        Heat: 0.7
-        Radiation: 0.5
-        Caustic: 0.5
+        Blunt: 0.6
+        Slash: 0.6
+        Piercing: 0.5
+        Heat: 0.3
+        Radiation: 0.1
+        Caustic: 0.45
+        Poison: 0.4
   - type: ClothingSpeedModifier
     walkModifier: 0.9
     sprintModifier: 0.9
@@ -217,6 +210,13 @@
   - type: PressureProtection
     highPressureMultiplier: 0.08
     lowPressureMultiplier: 1000
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.9
+        Slash: 0.9
+        Piercing: 0.9
+        Heat: 0.9
 
 # Paper
 - type: entity
@@ -278,7 +278,7 @@
   - type: Storage
     maxItemSize: Huge
     grid:
-    - 0,0,11,5
+    - 0,0,7,6
   - type: StorageFill
     contents:
     - id: PaperLawsdeFoA

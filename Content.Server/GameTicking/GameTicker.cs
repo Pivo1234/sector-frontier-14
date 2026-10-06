@@ -8,7 +8,7 @@ using Content.Server.Maps;
 using Content.Server.Players.PlayTimeTracking;
 using Content.Server.Preferences.Managers;
 using Content.Server.ServerUpdates;
-using Content.Server._Lua.Company;
+using Content.Lua.Shared.Company;
 using Content.Server.Station.Systems;
 using Content.Shared.CCVar;
 using Content.Shared.Chat;
@@ -29,6 +29,7 @@ using Robust.Shared.Utility;
 
 #if EXCEPTION_TOLERANCE
 using Robust.Shared.Exceptions;
+using Robust.Shared.GameObjects;
 #endif
 
 namespace Content.Server.GameTicking
@@ -43,7 +44,6 @@ namespace Content.Server.GameTicking
         [Dependency] private readonly IGameMapManager _gameMapManager = default!;
         [Dependency] private readonly IGameTiming _gameTiming = default!;
         [Dependency] private readonly ILogManager _logManager = default!;
-        [Dependency] private readonly IMapManager _mapManager = default!;
         [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
         [Dependency] private readonly IRobustRandom _robustRandom = default!;
 #if EXCEPTION_TOLERANCE
@@ -60,9 +60,10 @@ namespace Content.Server.GameTicking
         [Dependency] private readonly PvsOverrideSystem _pvsOverride = default!;
         [Dependency] private readonly ServerUpdateManager _serverUpdates = default!;
         [Dependency] private readonly SharedAudioSystem _audio = default!;
-        [Dependency] private readonly FactionOwnedStationSystem _ownedStations = default!;
+        [Dependency] private readonly IFactionOwnedStationSystem _ownedStations = default!;
         [Dependency] private readonly StationJobsSystem _stationJobs = default!;
         [Dependency] private readonly StationSpawningSystem _stationSpawning = default!;
+        [Dependency] private readonly StationSystem _station = default!;
         [Dependency] private readonly SharedTransformSystem _transform = default!;
         [Dependency] private readonly UserDbDataManager _userDb = default!;
         [Dependency] private readonly MetaDataSystem _metaData = default!;
@@ -72,7 +73,7 @@ namespace Content.Server.GameTicking
         [ViewVariables] private bool _initialized;
         [ViewVariables] private bool _postInitialized;
 
-        [ViewVariables] public MapId DefaultMap { get; private set; }
+        private readonly List<MapId> _pendingMapInit = new();
 
         private ISawmill _sawmill = default!;
 

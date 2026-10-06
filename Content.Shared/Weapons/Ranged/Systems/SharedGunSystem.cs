@@ -22,6 +22,7 @@ using Content.Shared.Throwing;
 using Content.Shared.Timing;
 using Content.Shared.Verbs;
 using Content.Shared.Weapons.Hitscan.Components;
+using Content.Shared.Weapons.Hitscan.Events;
 using Content.Shared.Weapons.Melee;
 using Content.Shared.Weapons.Melee.Events;
 using Content.Shared.Weapons.Ranged.Components;
@@ -49,7 +50,7 @@ public abstract partial class SharedGunSystem : EntitySystem
 {
     [Dependency] private readonly ActionBlockerSystem _actionBlockerSystem = default!;
     [Dependency] protected readonly IGameTiming Timing = default!;
-    [Dependency] protected readonly IMapManager MapManager = default!;
+    [Dependency] protected readonly SharedMapSystem MapManager = default!;
     [Dependency] private readonly INetManager _netManager = default!;
     [Dependency] protected readonly IPrototypeManager ProtoManager = default!;
     [Dependency] protected readonly IRobustRandom Random = default!;
@@ -564,6 +565,23 @@ public abstract partial class SharedGunSystem : EntitySystem
             Projectiles.SetShooter(uid, projectile, shooter.Value);
 
         TransformSystem.SetWorldRotation(uid, direction.ToWorldAngle() + projectile.Angle);
+    }
+
+    // Mono - handle hitscan spawned from cartridges (e.g. Magnum45)
+    public virtual void ShootHitscan(EntityUid uid, EntityCoordinates? fromCoordinates, Vector2 direction, EntityUid gunUid, EntityUid? user = null, EntityUid? target = null)
+    {
+        if (fromCoordinates is null)
+            return;
+
+        var hitscanEv = new HitscanTraceEvent
+        {
+            FromCoordinates = fromCoordinates.Value,
+            ShotDirection = direction.Normalized(),
+            Gun = gunUid,
+            Shooter = user,
+            Target = target,
+        };
+        RaiseLocalEvent(uid, ref hitscanEv);
     }
 
     // Mono

@@ -1,5 +1,6 @@
+using Content.Lua.Shared.Shuttles.Components;
+using Content.Lua.Shared.Shuttles;
 using Content.Server.Physics.Controllers;
-using Content.Server.Shuttles.Components;
 using Content.Shared._Mono;
 using Content.Shared._Mono.SpaceArtillery;
 using Robust.Shared.Map;
@@ -8,21 +9,22 @@ using Robust.Shared.Physics.Components;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Physics.Systems;
 using System.Numerics;
+using Robust.Shared.GameObjects;
 
 namespace Content.Server._Mono.NPC.HTN;
 
 public sealed partial class ShipSteeringSystem : EntitySystem
 {
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
-    [Dependency] private readonly IMapManager _mapMan = default!;
+    [Dependency] private readonly SharedMapSystem _mapMan = default!;
     [Dependency] private readonly MoverController _mover = default!;
     [Dependency] private readonly SharedPhysicsSystem _physics = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
 
+    [Dependency] private readonly IShuttleGridAccessSystem _gridAccess = default!;
     private EntityQuery<MapGridComponent> _gridQuery;
     private EntityQuery<ProjectileGridPhaseComponent> _phaseQuery;
     private EntityQuery<PhysicsComponent> _physQuery;
-    private EntityQuery<ShuttleComponent> _shuttleQuery;
 
     private List<Entity<MapGridComponent>> _avoidGrids = new();
     private HashSet<Entity<ShipWeaponProjectileComponent>> _avoidProjs = new();
@@ -42,7 +44,6 @@ public sealed partial class ShipSteeringSystem : EntitySystem
         _gridQuery = GetEntityQuery<MapGridComponent>();
         _phaseQuery = GetEntityQuery<ProjectileGridPhaseComponent>();
         _physQuery = GetEntityQuery<PhysicsComponent>();
-        _shuttleQuery = GetEntityQuery<ShuttleComponent>();
     }
 
     private void OnSteererGetInputs(Entity<ShipSteererComponent> ent, ref GetShuttleInputsEvent args)
@@ -55,7 +56,7 @@ public sealed partial class ShipSteeringSystem : EntitySystem
 
         if (shipUid == null
             || TerminatingOrDeleted(targetUid)
-            || !_shuttleQuery.TryComp(shipUid, out var shuttle)
+            || !_gridAccess.TryGetShuttleGrid(shipUid.Value, out var shuttle)
             || !_physQuery.TryComp(shipUid, out var shipBody)
             || !_gridQuery.TryComp(shipUid, out var shipGrid))
         {
@@ -292,7 +293,7 @@ public sealed partial class ShipSteeringSystem : EntitySystem
     {
         // check our brake thrust
         var brakeVec = GetGoodThrustVector((-ctx.ShipNorthAngle).RotateVec(-ctx.ShipBody.LinearVelocity), ctx.Shuttle);
-        var brakeThrust = _mover.GetDirectionThrust(brakeVec, ctx.Shuttle, ctx.ShipBody) * ShuttleComponent.BrakeCoefficient;
+        var brakeThrust = _mover.GetDirectionThrust(brakeVec, ctx.Shuttle, ctx.ShipBody) * ShuttleGridConstants.BrakeCoefficient;
         var brakeAccelVec = brakeThrust * ctx.ShipBody.InvMass;
         var brakeAccel = brakeAccelVec.Length();
 
@@ -716,7 +717,7 @@ public sealed partial class ShipSteeringSystem : EntitySystem
     /// <summary>
     /// Checks if thrust in any direction this vector wants to go to is blocked, and zeroes it out in that direction if necessary.
     /// </summary>
-    public Vector2 GetGoodThrustVector(Vector2 wish, ShuttleComponent shuttle, float threshold = 0.125f)
+    public Vector2 GetGoodThrustVector(Vector2 wish, IShuttleGrid shuttle, float threshold = 0.125f)
     {
         var res = NormalizedOrZero(wish);
 
@@ -744,10 +745,9 @@ public sealed partial class ShipSteeringSystem : EntitySystem
     {
         var xform = Transform(ent);
         var shipUid = xform.GridUid;
-        if (_shuttleQuery.TryComp(shipUid, out _))
-            _mover.AddPilot(shipUid.Value, ent);
-        else
+        if (shipUid is not { } gridUid || !_gridAccess.TryGetShuttleGrid(gridUid, out _))
             return null;
+        _mover.AddPilot(gridUid, ent);
 
         if (!Resolve(ent, ref ent.Comp, false))
         {
@@ -782,7 +782,7 @@ public sealed partial class ShipSteeringSystem : EntitySystem
         public TransformComponent ShipXform;
         public PhysicsComponent ShipBody;
         // TODO: get rid of Shuttle and ShipGrid so this can be reused for non-grid piloting
-        public ShuttleComponent Shuttle;
+        public IShuttleGrid Shuttle;
         public MapGridComponent ShipGrid;
         public MapCoordinates ShipPos;
         public Angle ShipNorthAngle;

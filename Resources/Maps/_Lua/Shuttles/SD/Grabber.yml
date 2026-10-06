@@ -42,8 +42,6 @@ entities:
       rot: 3.141592653589793 rad
       pos: -3.186802,-1.3349302
       parent: invalid
-    - type: BecomesStation
-      id: Grabber
     - type: MapGrid
       chunks:
         0,0:
@@ -81,7 +79,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: ShuttleGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity

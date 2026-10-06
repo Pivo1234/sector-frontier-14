@@ -2,6 +2,8 @@
   id: Dragon
   hostile:
     - NanoTrasen
+    - Ussp
+    - TSFMC
     - Neutral
     - Syndicate
     - Xeno
@@ -12,6 +14,7 @@
     - WizFedFaction # Frontier
     - BloodCultNF # Frontier
     - NFSyndicate # Frontier
+    - HostileSyndicate # Lua expedition syndies
     - NFPirate # Frontier
     - ExplorersExpeditionNF # Frontier
     - ArtifactConstruct # Frontier
@@ -31,6 +34,8 @@
   hostile:
   - SimpleHostile
   - Syndicate
+  - Ussp
+  - TSFMC
   - Xeno
   - Zombie
   - Revolutionary
@@ -41,6 +46,7 @@
   - WizFedFaction # Frontier
   - BloodCultNF # Frontier
   - NFSyndicate # Frontier
+  - HostileSyndicate # Lua expedition syndies
   - NFPirate # Frontier
   - ExplorersExpeditionNF # Frontier
   - ArtifactConstruct # Frontier
@@ -69,6 +75,7 @@
   - WizFedFaction # Frontier
   - BloodCultNF # Frontier
   - NFSyndicate # Frontier
+  - HostileSyndicate # Lua expedition syndies
   - NFPirate # Frontier
   - ExplorersExpeditionNF # Frontier
   - ArtifactConstruct # Frontier
@@ -108,6 +115,8 @@
   id: SimpleHostile
   hostile:
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - Syndicate
   - Passive
@@ -122,6 +131,7 @@
   - WizFedFaction # Frontier
   - BloodCultNF # Frontier
   - NFSyndicate # Frontier
+  - HostileSyndicate # Lua expedition syndies
   - NFPirate # Frontier
   - ExplorersExpeditionNF # Frontier
   - ArtifactConstruct # Frontier
@@ -143,8 +153,11 @@
   id: Syndicate
   friendly: # Frontier
   - NFSyndicate # Frontier
+  - HostileSyndicate # Lua expedition syndies
   hostile:
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - SimpleHostile
   - Xeno
@@ -174,6 +187,8 @@
   id: Xeno
   hostile:
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - Syndicate
   - Passive
@@ -187,6 +202,7 @@
   - WizFedFaction # Frontier
   - BloodCultNF # Frontier
   - NFSyndicate # Frontier
+  - HostileSyndicate # Lua expedition syndies
   - NFPirate # Frontier
   - ExplorersExpeditionNF # Frontier
   - ArtifactConstruct # Frontier
@@ -205,6 +221,8 @@
   id: Zombie
   hostile:
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - SimpleNeutral
   - SimpleHostile
@@ -219,6 +237,7 @@
   - WizFedFaction # Frontier
   - BloodCultNF # Frontier
   - NFSyndicate # Frontier
+  - HostileSyndicate # Lua expedition syndies
   - NFPirate # Frontier
   - ExplorersExpeditionNF # Frontier
   - ArtifactConstruct # Frontier
@@ -237,6 +256,8 @@
   id: Revolutionary
   hostile:
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - Zombie
   - SimpleHostile
@@ -264,6 +285,8 @@
   id: AllHostile # Frontier: use HostileUniversally
   hostile:
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - Dragon
   - Mouse
@@ -284,6 +307,8 @@
   id: Wizard
   hostile:
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - Dragon
   - Mouse
@@ -300,6 +325,7 @@
   # - WizFedFaction # Frontier
   - BloodCultNF # Frontier
   - NFSyndicate # Frontier
+  - HostileSyndicate # Lua expedition syndies
   - NFPirate # Frontier
   - ExplorersExpeditionNF # Frontier
   - ArtifactConstruct # Frontier
@@ -319,6 +345,8 @@
   hostile:
   # they have brains
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - Syndicate
   - Zombie

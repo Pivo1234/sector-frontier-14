@@ -72,10 +72,8 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: StationGrid
     - type: GridPathfinding
-    - type: BecomesStation
-      id: McHobo
     - type: DecalGrid
       chunkCollection:
         version: 2

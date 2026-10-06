@@ -8,14 +8,14 @@ using Content.Shared._NF.Bank.Components;
 using Robust.Shared.Audio;
 using Robust.Shared.Player;
 using Content.Shared._NF.CrateMachine.Components;
-using Content.Server._Lua.DynamicMarket.Systems; // Lua
+using Content.Lua.Shared.DynamicMarket;
 
 namespace Content.Server._NF.Market.Systems;
 
 public sealed partial class MarketSystem
 {
     [Dependency] private readonly CrateMachineSystem _crateMachine = default!;
-    [Dependency] private readonly DynamicMarketDbSystem _dynamicMarket = default!; // Lua
+    [Dependency] private readonly IDynamicMarketDbSystem _dynamicMarket = default!;
 
     private void InitializeCrateMachine()
     {
@@ -53,7 +53,7 @@ public sealed partial class MarketSystem
         if (args.Actor is not { Valid: true } player)
             return;
 
-        if (!HasComp<BankAccountComponent>(player))
+        if (!_bankSystem.HasAccountBank(player))
             return;
 
         TrySpawnCrate(crateMachineUid, player, consoleUid, component, consoleComponent, marketMod);

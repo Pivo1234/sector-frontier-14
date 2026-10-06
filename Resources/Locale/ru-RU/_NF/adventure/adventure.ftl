@@ -14,9 +14,11 @@ lua-adventure-title = Исследование Сектора
 
 adventure-description = Исследуйте неизведанные уголки космоса, проводите научные исследования, занимайтесь спасательными операциями или транспортировкой грузов и прокладывайте свой путь к богатству!
 lua-adventure-description = Исследуйте неизведанные уголки космоса, проводите научные исследования, занимайтесь спасательными операциями или транспортировкой грузов и прокладывайте свой путь к звёздам!
+lua-test-title = Тест
+lua-test-description = Лёгкий пресет для интеграционных и локальных тестов. Без POI и bluespace-событий.
 currency = Кредиты
 shipyard-rules-default1 =
-    Благодарим Вас за присоединение к СРБС.
+    Благодарим Вас за присоединение к Frontline Solutions.
     Покупая шаттл, вы соглашаетесь со всеми
     положениями должностных инструкций.
 shipyard-rules-default2 =
@@ -32,3 +34,17 @@ public-transit-departure = Транспорт направляется в { $des
 public-transit-arrival = Благодарим за выбор общественного транспорта NT. Следующий шаттл до { $destination } отправляется через { $waittime } секунд.
 shuttle-ftl-too-many = Слишком много активных экспедиций!
 adventure-webhook-ledger-start = Бухгалтерский учёт
+adventure-webhook-shipstats-start = Предпочтения верфи
+adventure-webhook-shipstats-summary = Всего: {$ships} · Брошено: {$abandoned} · Ср. время: {$avgTime}
+adventure-webhook-shipstats-thresholds = Пороги раунда: новички ≤ {$newcomers} · низкий ≤ {$low} · средний ≤ {$mid}
+adventure-webhook-shipstats-category-newcomers = **Новички** (≤ {$max})
+adventure-webhook-shipstats-category-low = **Низкий класс** ({$min}-{$max})
+adventure-webhook-shipstats-category-mid = **Средний класс** ({$min}-{$max})
+adventure-webhook-shipstats-category-high = **Высокий класс** (≥ {$min})
+adventure-webhook-shipstats-entry = {$count}× {$ship} · ср. {$avgTime} · брошено {$abandoned}/{$count}
+adventure-webhook-shipstats-empty = Нет покупок
+adventure-webhook-shipstats-avg-na = -
+
+adventure-webhook-footer =
+    Сервер: {$serverName}
+    Раунд: #{$roundId}

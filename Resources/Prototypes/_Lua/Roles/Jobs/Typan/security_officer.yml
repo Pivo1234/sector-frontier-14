@@ -34,10 +34,15 @@
     time: 360000
   access:
   - SyndicateAgent
-  - NuclearOperative
-  - TelecomOfficer
+  - SyndicateTelecomOfficer
+  - SyndicateCommand
+  - SyndicateSecurity
+  - SyndicateBrig
+  - SyndicateArmory
+  - SyndicateMaintenance
+  - SyndicateExternal
   accessGroups:
-  - AllAccess
+  - SyndicateAll
   special:
   - !type:AddImplantSpecial
     implants: [ DeathAcidifierImplantLWTypan ]

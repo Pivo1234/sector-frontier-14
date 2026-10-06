@@ -13,6 +13,7 @@ using Content.Shared.Body.Components;
 using Content.Shared.Body.Part;
 using Content.Shared.Chemistry.Components.SolutionManager;
 using Content.Shared.Chemistry.EntitySystems;
+using Content.Shared.Chemistry.Reagent;
 using Content.Shared.Chemistry.Reaction;
 using Content.Shared.Construction.EntitySystems;
 using Content.Shared.Database;
@@ -27,6 +28,7 @@ using Content.Server.Lightning;
 using Content.Shared.Item;
 using Content.Shared.Kitchen;
 using Content.Shared.Kitchen.Components;
+using Content.Shared.Kitchen.Events;
 using Content.Shared.Popups;
 using Content.Shared.Power;
 using Content.Shared.Tag;
@@ -212,7 +214,7 @@ namespace Content.Server.Kitchen.EntitySystems
         {
             // TODO Turn recipe.IngredientsReagents into a ReagentQuantity[]
 
-            var totalReagentsToRemove = new Dictionary<string, FixedPoint2>(recipe.IngredientsReagents);
+            var totalReagentsToRemove = new Dictionary<ProtoId<ReagentPrototype>, FixedPoint2>(recipe.IngredientsReagents);
 
             // this is spaghetti ngl
             foreach (var item in component.Storage.ContainedEntities)
@@ -227,7 +229,7 @@ namespace Content.Server.Kitchen.EntitySystems
                     if (!totalReagentsToRemove.ContainsKey(reagent))
                         continue;
 
-                    var quant = solution.GetTotalPrototypeQuantity(reagent);
+                    var quant = solution.GetTotalPrototypeQuantity(reagent.Id);
 
                     if (quant >= totalReagentsToRemove[reagent])
                     {
@@ -239,7 +241,7 @@ namespace Content.Server.Kitchen.EntitySystems
                         totalReagentsToRemove[reagent] -= quant;
                     }
 
-                    _solutionContainer.RemoveReagent(solutionEntity.Value, reagent, quant);
+                    _solutionContainer.RemoveReagent(solutionEntity.Value, reagent.Id, quant);
                 }
             }
 
@@ -266,7 +268,7 @@ namespace Content.Server.Kitchen.EntitySystems
                             itemID = metaData.EntityPrototype.ID;
                         }
 
-                        if (itemID != recipeSolid.Key)
+                        if (itemID != recipeSolid.Key.Id)
                         {
                             continue;
                         }
@@ -647,6 +649,8 @@ namespace Content.Server.Kitchen.EntitySystems
 
             _audio.PlayPvs(component.StartCookingSound, uid);
             var activeComp = AddComp<ActiveMicrowaveComponent>(uid); //microwave is now cooking
+            var cookEv = new MicrowaveCookStartedEvent(uid, user);
+            RaiseLocalEvent(ref cookEv);
             activeComp.CookTimeRemaining = component.CurrentCookTimerTime * component.FinalCookTimeMultiplier; // Frontier: CookTimeMultiplier<FinalCookTimeMultiplier
             activeComp.TotalTime = component.CurrentCookTimerTime; //this doesn't scale so that we can have the "actual" time
             activeComp.PortionedRecipe = portionedRecipe;

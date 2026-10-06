@@ -38,7 +38,10 @@ namespace Content.Client.Lobby.UI
             Rules.OnPressed += _ => new RulesAndInfoWindow().Open();
             Guidebook.OnPressed += _ => UserInterfaceManager.GetUIController<GuidebookUIController>().ToggleGuidebook();
             Changelog.OnPressed += _ => UserInterfaceManager.GetUIController<ChangelogUIController>().ToggleWindow();
+            RoadmapButton.OnPressed += _ => RoadmapPressed?.Invoke();
         }
+
+        public event Action? RoadmapPressed;
 
         public void SwitchState(LobbyGuiState state)
         {

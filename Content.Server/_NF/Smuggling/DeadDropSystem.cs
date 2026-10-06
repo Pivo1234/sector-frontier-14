@@ -1,4 +1,4 @@
-using Content.Server._Lua.Sectors;
+using Content.Lua.Shared.Sectors;
 using Content.Server._NF.GameTicking.Events;
 using Content.Server._NF.SectorServices;
 using Content.Server._NF.Shipyard.Systems;
@@ -28,12 +28,14 @@ using Robust.Shared.Random;
 using Robust.Shared.Timing;
 using System.Linq;
 using System.Text;
+using Content.Lua.Shared.Shuttles;
 
 namespace Content.Server._NF.Smuggling;
 
 public sealed class DeadDropSystem : EntitySystem
 {
     [Dependency] private readonly IAdminLogManager _adminLogger = default!;
+    [Dependency] private readonly IShuttleGridAccessSystem _gridAccess = default!;
     [Dependency] private readonly SharedHandsSystem _hands = default!;
     [Dependency] private readonly MapLoaderSystem _map = default!;
     [Dependency] private readonly MetaDataSystem _meta = default!;
@@ -51,7 +53,7 @@ public sealed class DeadDropSystem : EntitySystem
     [Dependency] private readonly SharedGameTicker _ticker = default!;
     [Dependency] private readonly LinkedLifecycleGridSystem _linkedLifecycleGrid = default!;
     [Dependency] private readonly StationRenameWarpsSystems _stationRenameWarps = default!;
-    [Dependency] private readonly SectorSystem _sectors = default!;
+    [Dependency] private readonly ISectorSystem _sectors = default!;
     private ISawmill _sawmill = default!;
 
     private readonly Queue<EntityUid> _drops = [];
@@ -79,6 +81,7 @@ public sealed class DeadDropSystem : EntitySystem
         SubscribeLocalEvent<StationDeadDropComponent, ComponentStartup>(OnStationStartup);
         SubscribeLocalEvent<StationDeadDropComponent, ComponentShutdown>(OnStationShutdown);
         SubscribeLocalEvent<StationsGeneratedEvent>(OnStationsGenerated);
+        SubscribeLocalEvent<SectorLoadedEvent>(OnSectorLoaded);
         SubscribeLocalEvent<StationGridAddedEvent>(OnStationGridAddedAssignDeadDrops);
         SubscribeLocalEvent<PotentialDeadDropComponent, ComponentStartup>(OnPotentialDeadDropStartup);
         SubscribeLocalEvent<SectorDeadDropComponent, ComponentInit>(OnSectorDeadDropInit);
@@ -193,7 +196,8 @@ public sealed class DeadDropSystem : EntitySystem
             if (station == null) return;
             resolvedStation = station.Value;
         }
-        if (TryComp<SectorDeadDropComponent>(_sectorService.GetServiceEntity(), out var deadDrop))
+        if (_sectorService.TryGetServiceEntity(resolvedStation, out var service) &&
+            TryComp<SectorDeadDropComponent>(service, out var deadDrop))
         { deadDrop.DeadDropStationNames[resolvedStation] = MetaData(resolvedStation).EntityName; }
         TryAssignDeadDropsForStation(resolvedStation, component.MaxDeadDrops);
     }
@@ -278,7 +282,8 @@ public sealed class DeadDropSystem : EntitySystem
     // Then once on any new stations if/when they're created.
     private void OnStationShutdown(EntityUid stationUid, StationDeadDropComponent component, ComponentShutdown _)
     {
-        if (TryComp<SectorDeadDropComponent>(_sectorService.GetServiceEntity(), out var deadDrop))
+        if (_sectorService.TryGetServiceEntity(stationUid, out var service) &&
+            TryComp<SectorDeadDropComponent>(service, out var deadDrop))
         {
             deadDrop.DeadDropStationNames.Remove(stationUid);
         }
@@ -349,16 +354,7 @@ public sealed class DeadDropSystem : EntitySystem
         var stationDropQuery = AllEntityQuery<StationDeadDropComponent>();
         while (stationDropQuery.MoveNext(out var holder, out var stationDeadDrop))
         {
-            EntityUid station;
-            if (HasComp<StationDataComponent>(holder)) station = holder;
-            else
-            {
-                var own = _station.GetOwningStation(holder);
-                if (own is null) continue;
-                station = own.Value;
-            }
-
-            TryAssignDeadDropsForStation(station, stationDeadDrop.MaxDeadDrops);
+            AssignDeadDropsForHolder(holder, stationDeadDrop);
         }
         var hintQuery = AllEntityQuery<DeadDropHintComponent>();
         List<EntityUid> allHints = new();
@@ -367,6 +363,7 @@ public sealed class DeadDropSystem : EntitySystem
 
         _random.Shuffle(allHints);
         var numHints = _random.Next(_minDeadDropHints, _maxDeadDropHints + 1);
+
         for (int i = 0; i < allHints.Count && i < numHints; i++)
         {
             var ent = allHints[i];
@@ -390,6 +387,39 @@ public sealed class DeadDropSystem : EntitySystem
                 RemComp<DeadDropHintComponent>(ent);
             }
         }
+    }
+
+    private void OnSectorLoaded(SectorLoadedEvent args)
+    {
+        if (!_sectors.TryGetStationGrid(args.SectorId, out var grid) || !grid.IsValid())
+            return;
+
+        if (!TryComp<StationDeadDropComponent>(grid, out var stationDeadDrop))
+        {
+            var own = _station.GetOwningStation(grid);
+            if (own == null || !TryComp(own.Value, out stationDeadDrop))
+                return;
+            AssignDeadDropsForHolder(own.Value, stationDeadDrop);
+            return;
+        }
+
+        AssignDeadDropsForHolder(grid, stationDeadDrop);
+    }
+
+    private void AssignDeadDropsForHolder(EntityUid holder, StationDeadDropComponent stationDeadDrop)
+    {
+        EntityUid station;
+        if (HasComp<StationDataComponent>(holder))
+            station = holder;
+        else
+        {
+            var own = _station.GetOwningStation(holder);
+            if (own is null)
+                return;
+            station = own.Value;
+        }
+
+        TryAssignDeadDropsForStation(station, stationDeadDrop.MaxDeadDrops);
     }
 
     private void OnStartup(EntityUid paintingUid, DeadDropComponent component, ComponentStartup _)
@@ -470,7 +500,10 @@ public sealed class DeadDropSystem : EntitySystem
         // Get sector info (with sane defaults if it doesn't exist)
         int maxSimultaneousPods = 5;
         int deadDropsThisHour = 0;
-        if (TryComp<SectorDeadDropComponent>(_sectorService.GetServiceEntity(), out var sectorDeadDrop))
+        SectorDeadDropComponent? sectorDeadDrop = null;
+        if (_sectorService.TryGetServiceEntity(mapUid.Value, out var service))
+            TryComp(service, out sectorDeadDrop);
+        if (sectorDeadDrop != null)
         {
             maxSimultaneousPods = _maxSimultaneousPods;
             if (sectorDeadDrop.ReportedEventsThisHour != null)
@@ -481,7 +514,7 @@ public sealed class DeadDropSystem : EntitySystem
         }
 
         //this will spawn in the latest ship, and delete the oldest one available if the amount of ships exceeds 5.
-        if (TryComp<ShuttleComponent>(grid, out var shuttle))
+        if (_gridAccess.TryGetShuttleGrid(grid, out var shuttle))
         {
             _shuttle.FTLToCoordinates(grid, shuttle, new EntityCoordinates(mapUid.Value, dropLocation), 0f, 0f, 35f);
             _drops.Enqueue(grid);

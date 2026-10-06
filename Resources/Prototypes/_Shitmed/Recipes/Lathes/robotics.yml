@@ -181,8 +181,8 @@
 
 - type: latheRecipe
   parent: BaseToolRecipe
-  id: AutosurgeonRightMantisBladeMieyoFlatpack
-  result: AutosurgeonRightMantisBladeMieyoFlatpack
+  id: AutosurgeonRightMantisBladeMieyo
+  result: AutosurgeonRightMantisBladeMieyo
   materialDiscountScale: 0
   materials:
     Steel: 3000
@@ -196,14 +196,14 @@
     Iridite: 20
 
 - type: latheRecipe
-  parent: AutosurgeonRightMantisBladeMieyoFlatpack
-  id: AutosurgeonLeftMantisBladeMieyoFlatpack
-  result: AutosurgeonLeftMantisBladeMieyoFlatpack
+  parent: AutosurgeonRightMantisBladeMieyo
+  id: AutosurgeonLeftMantisBladeMieyo
+  result: AutosurgeonLeftMantisBladeMieyo
 
 - type: latheRecipe
   parent: BaseToolRecipe
-  id: AutosurgeonSandevistanMieyoFlatpack
-  result: AutosurgeonSandevistanMieyoFlatpack
+  id: AutosurgeonSandevistanMieyo
+  result: AutosurgeonSandevistan
   materialDiscountScale: 0
   materials:
     Steel: 6000
@@ -219,8 +219,8 @@
 
 - type: latheRecipe
   parent: BaseToolRecipe
-  id: AutosurgeonMuscleFibersMieyoFlatpack
-  result: AutosurgeonMuscleFibersMieyoFlatpack
+  id: AutosurgeonMuscleFibersMieyo
+  result: AutosurgeonMuscleFibersMieyo
   materialDiscountScale: 0
   materials:
     Steel: 2500
@@ -233,8 +233,8 @@
 
 - type: latheRecipe
   parent: BaseToolRecipe
-  id: AutosurgeonSandevistanTSFFlatpack
-  result: AutosurgeonSandevistanTSFFlatpack
+  id: AutosurgeonSandevistanTSF
+  result: AutosurgeonSandevistanTSF
   materialDiscountScale: 0
   materials:
     Steel: 6000
@@ -250,8 +250,8 @@
 
 - type: latheRecipe
   parent: BaseToolRecipe
-  id: AutosurgeonShuntTSFFlatpack
-  result: AutosurgeonShuntTSFFlatpack
+  id: AutosurgeonShuntTSF
+  result: AutosurgeonShuntTSF
   materialDiscountScale: 0
   materials:
     Steel: 10000
@@ -266,42 +266,3 @@
     Bluespace: 2000
     Iridite: 1000
 
-- type: latheRecipe
-  parent: BaseToolRecipe
-  id: AutosurgeonIASPDVFlatpack
-  result: AutosurgeonIASPDVFlatpack
-  materialDiscountScale: 0
-  materials:
-    Steel: 2000
-    Plastic: 2500
-    Glass: 400
-    Plasteel: 1000
-    Lithium: 500
-    Copper: 500
-
-- type: latheRecipe
-  parent: BaseToolRecipe
-  id: AutosurgeonDermalArmorPDVFlatpack
-  result: AutosurgeonDermalArmorPDVFlatpack
-  materialDiscountScale: 0
-  materials:
-    Steel: 4000
-    Plastic: 2500
-    Glass: 400
-    Plasteel: 10000
-    Durathread: 1000
-
-- type: latheRecipe
-  parent: BaseToolRecipe
-  id: AutosurgeonAdvHeartPDVFlatpack
-  result: AutosurgeonAdvHeartPDVFlatpack
-  materialDiscountScale: 0
-  materials:
-    Steel: 2000
-    Plastic: 5000
-    Glass: 400
-    Plasteel: 2500
-    Plasma: 500
-    Lithium: 800
-    Copper: 800
-    Durathread: 1000

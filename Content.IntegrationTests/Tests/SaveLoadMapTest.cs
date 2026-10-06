@@ -17,11 +17,11 @@ namespace Content.IntegrationTests.Tests
         [Test]
         public async Task SaveLoadMultiGridMap()
         {
-            var mapPath = new ResPath("/Maps/Test/TestMap.yml");
+            var mapPath = new ResPath("/Maps/_Lua/Test/TestMap.yml");
 
             await using var pair = await PoolManager.GetServerClient();
             var server = pair.Server;
-            var mapManager = server.ResolveDependency<IMapManager>();
+            var mapManager = server.ResolveDependency<IEntityManager>().System<SharedMapSystem>();
             var sEntities = server.ResolveDependency<IEntityManager>();
             var mapLoader = sEntities.System<MapLoaderSystem>();
             var mapSystem = sEntities.System<SharedMapSystem>();

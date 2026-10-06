@@ -113,7 +113,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: EventGrid
       dampingModifier: 0.45
     - type: ImplicitRoof
     - type: GridPathfinding
@@ -1907,7 +1907,6 @@ entities:
         chunkSize: 4
     - type: GasTileOverlay
     - type: RadiationGridResistance
-    - type: ShipCpuLimit
 - proto: AirlockCentralCommandLocked
   entities:
   - uid: 2
@@ -7379,7 +7378,7 @@ entities:
       rot: 1.5707963267948966 rad
       pos: 25.5,14.5
       parent: 1
-- proto: NFWeaponEnergyPistolLaser
+- proto: WeaponLaserGun
   entities:
   - uid: 970
     components:
@@ -12240,7 +12239,7 @@ entities:
       rot: -1.5707963267948966 rad
       pos: 6.5,-5.5
       parent: 1
-- proto: WeaponTurretASM501
+- proto: WeaponTurretASM220
   entities:
   - uid: 1743
     components:

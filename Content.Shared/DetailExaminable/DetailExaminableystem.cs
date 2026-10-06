@@ -1,7 +1,8 @@
+using Content.Shared.ERP;
 using Content.Shared.Examine;
-using Content.Shared.Lua.CLVar;
-using Content.Shared._NF.Bank.Components;
+using Content.Lua.Common.CLVar;
 using Robust.Shared.Configuration;
+using Robust.Shared.Player;
 using Robust.Shared.Utility;
 
 namespace Content.Shared.DetailExaminable;
@@ -22,13 +23,13 @@ public sealed class DetailExaminableSystem : EntitySystem
         if (!_cfg.GetCVar(CLVars.IsERP))
             return;
 
-        if (!HasComp<BankAccountComponent>(ent))
+        if (!HasComp<ActorComponent>(ent))
             return;
 
         var color = ent.Comp.ERPStatus switch
         {
-            Content.Shared._Lua.ERP.EnumERPStatus.FULL => "green",
-            Content.Shared._Lua.ERP.EnumERPStatus.HALF => "yellow",
+            EnumERPStatus.FULL => "green",
+            EnumERPStatus.HALF => "yellow",
             _ => "red"
         };
 

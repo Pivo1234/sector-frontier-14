@@ -1,41 +1,4 @@
 # Hardsuit
-- type: sponsorLoadout
-  id: Sil
-  ownerLogin: _Sil
-  tier: god
-  entities:
-    - ClothingBackpackSil
-    - HypospraySil
-    - ClothingBeltSilFilled
-    - ClothingMaskGasSil
-    - ClothingShoesBootsSil
-    - PDASil
-    - AirTankSil
-    - ClothingUniformJumpsuitSil
-    - ClothingNeckSil
-    - ClothingHandsGlovesSil
-    - ClothingEyesHudSil
-    - ViolinInstrument
-    - PlushieSilAily
-    - PlushieSilAizek
-    - PlushieSilAzrail
-    - PlushieSilEmilia
-    - PlushieSilEva
-    - PlushieSilKrivazora
-    - PlushieSilAzrailHardsuit
-    - PlushieSilSharp
-    - PlushieSilRenaTakala
-    - PlushieSilEso
-    - PlushieSilKel
-    - PlushieSilWeaver
-    - PlushieSilEyrinLiht
-    - PlushieSilKelicKato1
-    - PlushieSilKelicKato2
-    - PlushieSilYuliWinter
-    - PlushieSilEkaterinaAkkerman
-    - PlushieSilYohanaWinter
-    - PlushieSilGermanKvaSki
-    - PlushieSilTimAkkerman
 
 - type: entity
   parent: [ClothingOuterHardsuitAtmos, HardsuitSpeedBuff]
@@ -49,13 +12,20 @@
   - type: Clothing
     sprite: _Lua/Sponsor/Sil/hardsuit.rsi
   - type: ToggleableClothing
-    clothingPrototype: ClothingHeadHelmetHardsuitSil
+    requiredSlot: outerclothing
+    blockUnequipWhenAttached: false
+    replaceCurrentClothing: true
+    clothingPrototypes:
+      head: ClothingHeadHelmetHardsuitSil
+      helmetcover: ClothingHeadHelmetCoverBlock
+      helmetattachment: ClothingHeadHelmetAttachmentBlock
   - type: ContainerContainer
     containers:
-      toggleable-clothing: !type:ContainerSlot
+      toggleable-clothing: !type:Container
+      storagebase: !type:Container
+        ents: []
         showEnts: false
         occludes: true
-        ent: null
       cell_slot: !type:ContainerSlot
   - type: ItemSlots
     slots:
@@ -76,12 +46,13 @@
   - type: Armor
     modifiers:
       coefficients:
-        Blunt: 0.65
-        Slash: 0.65
-        Piercing: 0.6
-        Heat: 0.7
-        Radiation: 0.5
-        Caustic: 0.5
+        Blunt: 0.6
+        Slash: 0.6
+        Piercing: 0.5
+        Heat: 0.3
+        Radiation: 0.1
+        Caustic: 0.45
+        Poison: 0.4
   - type: ClothingSpeedModifier
     walkModifier: 0.9
     sprintModifier: 0.9
@@ -147,7 +118,6 @@
     sprite: _Lua/Sponsor/Sil/jumpsuit.rsi
   - type: Clothing
     sprite: _Lua/Sponsor/Sil/jumpsuit.rsi
-
 
 # Neck
 - type: entity
@@ -298,14 +268,15 @@
   - type: Storage
     maxItemSize: Huge
     grid:
-    - 0,0,19,9
+    - 0,0,7,6
   - type: ToggleableClothing
     clothingPrototype: ClothingOuterHardsuitSil
     requiredSlot: BACK
     slot: outerClothing
   - type: ContainerContainer
     containers:
-      toggleable-clothing: !type:ContainerSlot {}
+      toggleable-clothing: !type:Container {}
+      cell_slot: !type:ContainerSlot {}
       storagebase: !type:Container
         ents: []
   - type: Tag
@@ -399,13 +370,13 @@
     size: Normal
   - type: MultipleTool
     entries:
-    - behavior: Prying
+    - behavior: [ Prying ]
       sprite:
         sprite: _Lua/Sponsor/Sil/tools_jawsoflife.rsi
         state: syn_jaws_pry
       useSound: /Audio/Items/jaws_pry.ogg
       changeSound: /Audio/Items/change_jaws.ogg
-    - behavior: Cutting
+    - behavior: [ Cutting ]
       sprite:
         sprite: _Lua/Sponsor/Sil/tools_jawsoflife.rsi
         state: syn_jaws_cutter
@@ -438,7 +409,7 @@
   - type: MultipleTool
     statusShowBehavior: true
     entries:
-    - behavior: Screwing
+    - behavior: [ Screwing ]
       sprite:
         sprite: _Lua/Sponsor/Sil/tools_powerdrill.rsi
         state: drill_screw
@@ -446,7 +417,7 @@
         path: /Audio/Items/drill_use.ogg
       changeSound:
         path: /Audio/Items/change_drill.ogg
-    - behavior: Anchoring
+    - behavior: [ Anchoring ]
       sprite:
         sprite: _Lua/Sponsor/Sil/tools_powerdrill.rsi
         state: drill_bolt

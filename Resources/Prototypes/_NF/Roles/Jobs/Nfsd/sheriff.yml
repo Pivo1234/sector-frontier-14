@@ -61,11 +61,10 @@
     pocket2: ADTWeaponPistolX01
   storage:
     back:
-    - NfsdTechFabFlatpack
+    - ProtolatheMachineCircuitboard
     - Multitool
     - HoloprojectorNfsd
     - DoorRemoteNfsd
-    - BaseSecurityUplinkRadioSheriff
     - RubberStampSheriff
 
 - type: chameleonOutfit
@@ -77,7 +76,7 @@
     mask: ClothingMaskGasSheriff
     eyes: ClothingEyesGlassesNfsd
     outerClothing: ClothingOuterCoatNfsdFormalSheriff
-    neck: ClothingNeckNfsdBadgeSheriff
+    necklace: ClothingNeckNfsdBadgeSheriff
     belt: ClothingBeltNfsdFilled
     gloves: ClothingHandsGlovesCombatNfsdCream
     shoes: ClothingShoesBootsNfsdBrown

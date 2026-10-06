@@ -61,7 +61,7 @@
     slot: head
   - type: ContainerContainer
     containers:
-      toggleable-clothing: !type:ContainerSlot {}
+      toggleable-clothing: !type:Container {}
       storagebase: !type:Container # Frontier
         ents: [] # Frontier
   - type: Tag
@@ -166,12 +166,12 @@
     radius: 2
     energy: 2
     color: blue
-    mask: /Textures/Effects/LightMasks/double_cone.png
+    lightMask: LightMaskDoubleCone
   - type: RotatingLight
     speed: 360
   - type: ContainerContainer
     containers:
-      toggleable-clothing: !type:ContainerSlot {}
+      toggleable-clothing: !type:Container {}
       storagebase: !type:Container # Frontier
         ents: [] # Frontier
   - type: Tag

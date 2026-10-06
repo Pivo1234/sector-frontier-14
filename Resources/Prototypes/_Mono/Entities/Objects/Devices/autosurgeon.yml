@@ -12,20 +12,6 @@
       actionProto: ActionToggleRightMantisBlade
 
 - type: entity
-  parent: BaseNFFlatpack
-  id: AutosurgeonRightMantisBladeMieyoFlatpack
-  name: syndicate autosurgeon (right mantis blade) flatpack
-  description: A flatpack used for constructing a syndicate autosurgeon.
-  components:
-  - type: Flatpack
-    entity: AutosurgeonRightMantisBladeMieyo
-  - type: StaticPrice
-    price: 2500
-  - type: Sprite
-    layers:
-    - state: medical_lathe
-
-- type: entity
   parent: BaseAutosurgeon
   id: AutosurgeonLeftMantisBladeMieyo
   name: syndicate autosurgeon (left mantis blade)
@@ -39,21 +25,7 @@
       actionProto: ActionToggleLeftMantisBlade
 
 - type: entity
-  parent: BaseNFFlatpack
-  id: AutosurgeonLeftMantisBladeMieyoFlatpack
-  name: syndicate autosurgeon (left mantis blade) flatpack
-  description: A flatpack used for constructing a syndicate autosurgeon.
-  components:
-  - type: Flatpack
-    entity: AutosurgeonLeftMantisBladeMieyo
-  - type: StaticPrice
-    price: 2500
-  - type: Sprite
-    layers:
-    - state: medical_lathe
-
-- type: entity
-  parent: BaseAutosurgeon
+  parent: [BaseAutosurgeon, ConstructibleMachine]
   id: AutosurgeonDermalArmorPDV
   name: nanotrasen autosurgeon (E-SAPI dermal armor)
   description: Implants an array of E-SAPI armor plates into the body. Makes you more vulnerable to heat and shock, but more resistant to bullets.
@@ -71,20 +43,8 @@
             Piercing: 0.85
             Blunt: 0.9
             Slash: 0.9
-
-- type: entity
-  parent: BaseNFFlatpack
-  id: AutosurgeonDermalArmorPDVFlatpack
-  name: nanotrasen autosurgeon (E-SAPI dermal armor) flatpack
-  description: A flatpack used for constructing a nanotrasen autosurgeon.
-  components:
-  - type: Flatpack
-    entity: AutosurgeonDermalArmorPDV
-  - type: StaticPrice
-    price: 2500
-  - type: Sprite
-    layers:
-    - state: medical_lathe
+  - type: Machine
+    board: AutosurgeonDermalArmorPDVCircuitboard
 
 - type: entity
   parent: BaseAutosurgeon
@@ -98,20 +58,6 @@
     newPartProto: OrganHeartTSFSandevistan
 
 - type: entity
-  parent: BaseNFFlatpack
-  id: AutosurgeonSandevistanTSFFlatpack
-  name: security autosurgeon (WJY-21X sandevistan) flatpack
-  description: A flatpack used for constructing a security autosurgeon.
-  components:
-  - type: Flatpack
-    entity: AutosurgeonSandevistanTSF
-  - type: StaticPrice
-    price: 15000
-  - type: Sprite
-    layers:
-    - state: medical_lathe
-
-- type: entity
   parent: BaseAutosurgeon
   id: AutosurgeonShuntTSF
   name: security autosurgeon (KR-22 shunt device)
@@ -123,21 +69,7 @@
     newPartProto: OrganHeartTSFShunt
 
 - type: entity
-  parent: BaseNFFlatpack
-  id: AutosurgeonShuntTSFFlatpack
-  name: security autosurgeon (KR-22 shunt device) flatpack
-  description: A flatpack used for constructing a security autosurgeon.
-  components:
-  - type: Flatpack
-    entity: AutosurgeonShuntTSF
-  - type: StaticPrice
-    price: 50000
-  - type: Sprite
-    layers:
-    - state: medical_lathe
-
-- type: entity
-  parent: BaseAutosurgeon
+  parent: [BaseAutosurgeon, ConstructibleMachine]
   id: AutosurgeonIASPDV
   name: nanotrasen autosurgeon (LS-210 IAS)
   description: Replaces the lungs with an advanced internal-air-system.
@@ -146,23 +78,11 @@
     targetBodyPart: Torso
     targetOrgan: Lungs
     newPartProto: OrganInternalAirSystem
+  - type: Machine
+    board: AutosurgeonIASPDVCircuitboard
 
 - type: entity
-  parent: BaseNFFlatpack
-  id: AutosurgeonIASPDVFlatpack
-  name: nanotrasen autosurgeon (LS-210 IAS) flatpack
-  description: A flatpack used for constructing a nanotrasen autosurgeon.
-  components:
-  - type: Flatpack
-    entity: AutosurgeonIASPDV
-  - type: StaticPrice
-    price: 4000
-  - type: Sprite
-    layers:
-    - state: medical_lathe
-
-- type: entity
-  parent: BaseAutosurgeon
+  parent: [BaseAutosurgeon, ConstructibleMachine]
   id: AutosurgeonAdvHeartPDV
   name: nanotrasen autosurgeon (VV/KE prosthetic heart)
   description: Replaces the heart with a more powerful one.
@@ -171,20 +91,8 @@
     targetBodyPart: Torso
     targetOrgan: Heart
     newPartProto: OrganPDVAdvancedHeart
-
-- type: entity
-  parent: BaseNFFlatpack
-  id: AutosurgeonAdvHeartPDVFlatpack
-  name: nanotrasen autosurgeon (VV/KE prosthetic heart) flatpack
-  description: A flatpack used for constructing a nanotrasen autosurgeon.
-  components:
-  - type: Flatpack
-    entity: AutosurgeonAdvHeartPDV
-  - type: StaticPrice
-    price: 3000
-  - type: Sprite
-    layers:
-    - state: medical_lathe
+  - type: Machine
+    board: AutosurgeonAdvHeartPDVCircuitboard
 
 - type: entity
   parent: BaseAutosurgeon
@@ -199,17 +107,3 @@
       dashAction: ActionDashMuscleFibersImplant
       requireItem: false
       isUser: true
-
-- type: entity
-  parent: BaseNFFlatpack
-  id: AutosurgeonMuscleFibersMieyoFlatpack
-  name: syndicate autosurgeon (muscle fibers suite) flatpack
-  description: A flatpack used for constructing a syndicate autosurgeon.
-  components:
-  - type: Flatpack
-    entity: AutosurgeonMuscleFibersMieyo
-  - type: StaticPrice
-    price: 2500
-  - type: Sprite
-    layers:
-    - state: medical_lathe

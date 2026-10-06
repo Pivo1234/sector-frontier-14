@@ -1,23 +1,4 @@
-# Mono BasicHitscan
-- type: entity
-  id: BasicHitscan
-  categories: [ HideSpawnMenu ]
-  components:
-  - type: HitscanAmmo
-  - type: HitscanBasicRaycast
-  - type: HitscanBasicVisuals
-    muzzleFlash:
-      sprite: Objects/Weapons/Guns/Projectiles/projectiles.rsi
-      state: muzzle_laser
-    travelFlash:
-      sprite: Objects/Weapons/Guns/Projectiles/projectiles.rsi
-      state: beam
-    impactFlash:
-      sprite: Objects/Weapons/Guns/Projectiles/projectiles.rsi
-      state: impact_laser
-  - type: HitscanReflect
-  - type: HitscanBasicEffects
-
+# Lua-only hitscans (BasicHitscan lives in vanilla Projectiles/hitscan.yml)
 # Pistols / SMGs
 - type: entity
   parent: BasicHitscan
@@ -163,12 +144,26 @@
 
 # Shuttle guns
 
-# Whatstone - got a rough value based on
+- type: entity
+  parent: NFRedLightLaser
+  categories: [ HideSpawnMenu, ShuttleGun ]
+  id: NFRedSvalinnShuttleLaser
+  components:
+  - type: HitscanRadarSignature
+    radarColor: "#FF4444"
+    lifeTime: 0.1
+  - type: HitscanBasicRaycast
+    maxDistance: 450
 - type: entity
   parent: BasicHitscan
-  categories: [ HideSpawnMenu ]
+  categories: [ HideSpawnMenu, ShuttleGun ]
   id: NFRedShuttleLaser
   components:
+  - type: HitscanRadarSignature
+    radarColor: "#FF2222"
+    lifeTime: 0.15
+  - type: HitscanBasicRaycast
+    maxDistance: 650
   - type: HitscanBasicDamage
     damage:
       types:

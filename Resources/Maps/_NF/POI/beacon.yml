@@ -95,7 +95,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: StationGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity
@@ -827,8 +827,6 @@ entities:
         chunkSize: 4
     - type: GasTileOverlay
     - type: RadiationGridResistance
-    - type: BecomesStation
-      id: Beacon
     - type: ImplicitRoof
 - proto: AirAlarm
   entities:

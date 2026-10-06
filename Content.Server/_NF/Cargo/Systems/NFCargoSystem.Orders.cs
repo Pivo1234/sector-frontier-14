@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Content.Server._NF.Cargo.Components;
 using Content.Shared._NF.Bank.BUI;
-using Content.Shared._NF.Bank.Components;
 using Content.Shared._NF.Cargo;
 using Content.Shared._NF.Cargo.Components;
 using Content.Shared._NF.Cargo.BUI;
@@ -85,7 +84,7 @@ public sealed partial class NFCargoSystem
             return;
         }
 
-        if (!HasComp<BankAccountComponent>(player))
+        if (!_bank.HasAccountBank(player))
         {
             ConsolePopup(args.Actor, Loc.GetString("cargo-console-nf-no-bank-account"));
             PlayDenySound(ent);
@@ -140,7 +139,7 @@ public sealed partial class NFCargoSystem
             if (!float.IsFinite(taxCoeff) || taxCoeff <= 0.0f)
                 continue;
             var tax = (int)Math.Floor(cost * taxCoeff);
-            _bank.TrySectorDeposit(account, tax, LedgerEntryType.CargoTax);
+            _bank.TrySectorDeposit(account, tax, LedgerEntryType.CargoTax, ent);
         }
 
         AddOrder(dbUid.Value, data, orderDatabase);
@@ -172,8 +171,7 @@ public sealed partial class NFCargoSystem
                 continue;
 
             var balance = 0;
-            if (TryComp<BankAccountComponent>(user, out var playerBank))
-                balance = playerBank.Balance;
+            _bank.TryGetBalance(user, out balance);
 
             if (station == null || !TryGetOrderDatabase(station.Value, out var _, out var orderDatabase))
                 continue;

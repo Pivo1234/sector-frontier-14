@@ -108,7 +108,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: ShuttleGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity
@@ -484,8 +484,6 @@ entities:
         chunkSize: 4
     - type: GasTileOverlay
     - type: RadiationGridResistance
-    - type: BecomesStation
-      id: Tarantula
     - type: ImplicitRoof
     - type: NavMap
 - proto: AirlockEngineering
@@ -4033,7 +4031,7 @@ entities:
     - type: Transform
       pos: 0.5,3.5
       parent: 1
-- proto: NFWeaponShotgunEnforcer
+- proto: WeaponShotgunEnforcer
   entities:
   - uid: 714
     components:
@@ -4041,7 +4039,7 @@ entities:
       parent: 713
     - type: Physics
       canCollide: False
-- proto: NFWeaponSubMachineGunDrozd
+- proto: WeaponSubMachineGunDrozd
   entities:
   - uid: 715
     components:

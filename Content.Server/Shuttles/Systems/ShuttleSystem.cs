@@ -1,8 +1,8 @@
+using Content.Lua.Shared.Sectors;
 using Content.Server._NF.Shuttles.Components; // Frontier
 using Content.Server.Administration.Logs;
 using Content.Server.Body.Systems;
 using Content.Server.Buckle.Systems;
-using Content.Server.GameTicking; // Frontier
 using Content.Server.Parallax;
 using Content.Server.Procedural;
 using Content.Server.Shuttles.Components;
@@ -32,6 +32,9 @@ using Robust.Shared.Random;
 using Robust.Shared.Timing;
 using Content.Shared.Maps;
 using Content.Shared.Tag;
+using Content.Lua.Shared.Shuttles;
+using Content.Lua.Shared.Shuttles.Components;
+using Robust.Shared.GameObjects;
 
 namespace Content.Server.Shuttles.Systems;
 
@@ -44,7 +47,7 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
     [Dependency] private readonly IAdminLogManager _logger = default!;
     [Dependency] private readonly IConfigurationManager _cfg = default!;
     [Dependency] private readonly IGameTiming _gameTiming = default!;
-    [Dependency] private readonly IMapManager _mapManager = default!;
+    [Dependency] private readonly SharedMapSystem _mapManager = default!;
     [Dependency] private readonly IPrototypeManager _protoManager = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly BiomeSystem _biomes = default!;
@@ -71,8 +74,8 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
     [Dependency] private readonly ThrowingSystem _throwing = default!;
     [Dependency] private readonly ThrusterSystem _thruster = default!;
     [Dependency] private readonly UserInterfaceSystem _uiSystem = default!;
-    [Dependency] private readonly GameTicker _ticker = default!; //Frontier: needed to get the main map in FTL
-    [Dependency] private readonly TurfSystem _turf = default!;
+    [Dependency] private readonly ISectorSystem _sectors = default!;
+    [Dependency] private readonly IShuttleGridAccessSystem _gridAccess = default!;
 
     private EntityQuery<BuckleComponent> _buckleQuery;
     private EntityQuery<MapGridComponent> _gridQuery;
@@ -93,11 +96,11 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
         InitializeIFF();
         InitializeImpact();
 
-        SubscribeLocalEvent<ShuttleComponent, ComponentStartup>(OnShuttleStartup);
-        SubscribeLocalEvent<ShuttleComponent, ComponentShutdown>(OnShuttleShutdown);
-        SubscribeLocalEvent<ShuttleComponent, TileFrictionEvent>(OnTileFriction);
-        SubscribeLocalEvent<ShuttleComponent, FTLStartedEvent>(OnFTLStarted);
-        SubscribeLocalEvent<ShuttleComponent, FTLCompletedEvent>(OnFTLCompleted);
+        SubscribeGridEvents<ComponentStartup>(OnGridStartup);
+        SubscribeGridEvents<ComponentShutdown>(OnGridShutdown);
+        SubscribeGridRefEvents<TileFrictionEvent>(OnTileFriction);
+        SubscribeGridRefEvents<FTLStartedEvent>(OnFTLStarted);
+        SubscribeGridRefEvents<FTLCompletedEvent>(OnFTLCompleted);
 
         SubscribeLocalEvent<GridInitializeEvent>(OnGridInit);
         NfInitialize(); // Frontier
@@ -114,31 +117,25 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
         if (HasComp<MapComponent>(ev.EntityUid))
             return;
 
-        EnsureComp<ShuttleComponent>(ev.EntityUid);
+        _gridAccess.InitializeGrid(ev.EntityUid);
         EnsureComp<ImplicitRoofComponent>(ev.EntityUid);
     }
 
-    private void OnShuttleStartup(EntityUid uid, ShuttleComponent component, ComponentStartup args)
+    private void OnGridStartup(EntityUid uid, IShuttleGrid grid, ComponentStartup args)
     {
         if (!HasComp<MapGridComponent>(uid))
-        {
             return;
-        }
 
         if (!TryComp(uid, out PhysicsComponent? physicsComponent))
-        {
             return;
-        }
 
-        if (component.Enabled)
-        {
-            Enable(uid, component: physicsComponent, shuttle: component);
-        }
+        if (grid.Enabled)
+            Enable(uid, component: physicsComponent, shuttle: grid);
 
-        component.DampingModifier = component.BodyModifier;
+        grid.DampingModifier = grid.BodyModifier;
     }
 
-    public void Toggle(EntityUid uid, ShuttleComponent component)
+    public void Toggle(EntityUid uid, IShuttleGrid grid)
     {
         if (!TryComp(uid, out PhysicsComponent? physicsComponent))
             return;
@@ -146,21 +143,24 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
         if (HasComp<PreventGridAnchorChangesComponent>(uid)) // Frontier
             return; // Frontier
 
-        component.Enabled = !component.Enabled;
+        grid.Enabled = !grid.Enabled;
 
-        if (component.Enabled)
-        {
-            Enable(uid, component: physicsComponent, shuttle: component);
-        }
+        if (grid.Enabled)
+            Enable(uid, component: physicsComponent, shuttle: grid);
         else
-        {
             Disable(uid, component: physicsComponent);
-        }
     }
 
-    public void Enable(EntityUid uid, FixturesComponent? manager = null, PhysicsComponent? component = null, ShuttleComponent? shuttle = null)
+    public void Toggle(EntityUid uid)
     {
-        if (!Resolve(uid, ref manager, ref component, ref shuttle, false))
+        if (!_gridAccess.TryGetShuttleGrid(uid, out var grid))
+            return;
+        Toggle(uid, grid);
+    }
+
+    public void Enable(EntityUid uid, FixturesComponent? manager = null, PhysicsComponent? component = null, IShuttleGrid? shuttle = null)
+    {
+        if (!Resolve(uid, ref manager, ref component, false))
             return;
 
         if (HasComp<PreventGridAnchorChangesComponent>(uid)) // Frontier
@@ -184,30 +184,49 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
         _physics.SetFixedRotation(uid, true, manager: manager, body: component);
     }
 
-    private void OnShuttleShutdown(EntityUid uid, ShuttleComponent component, ComponentShutdown args)
+    private void OnGridShutdown(EntityUid uid, IShuttleGrid grid, ComponentShutdown args)
     {
-        // None of the below is necessary for any cleanup if we're just deleting.
         if (Comp<MetaDataComponent>(uid).EntityLifeStage >= EntityLifeStage.Terminating)
             return;
 
         Disable(uid);
     }
 
-    private void OnTileFriction(Entity<ShuttleComponent> ent, ref TileFrictionEvent args)
+    private void OnTileFriction(EntityUid uid, IShuttleGrid grid, ref TileFrictionEvent args)
     {
-        args.Modifier *= ent.Comp.DampingModifier;
+        args.Modifier *= grid.DampingModifier;
     }
 
-    private void OnFTLStarted(Entity<ShuttleComponent> ent, ref FTLStartedEvent args)
+    private void OnFTLStarted(EntityUid uid, IShuttleGrid grid, ref FTLStartedEvent args)
     {
-        ent.Comp.DampingModifier = 0f;
+        grid.DampingModifier = 0f;
     }
 
-    private void OnFTLCompleted(Entity<ShuttleComponent> ent, ref FTLCompletedEvent args)
+    private void OnFTLCompleted(EntityUid uid, IShuttleGrid grid, ref FTLCompletedEvent args)
     {
-        ent.Comp.DampingModifier = ent.Comp.BodyModifier;
-        HandleMagneticLatchFtlCompleted(ent, ref args); // Lua
+        grid.DampingModifier = grid.BodyModifier;
+        HandleMagneticLatchFtlCompleted(uid, grid, ref args); // Lua
     }
 
-    partial void HandleMagneticLatchFtlCompleted(Entity<ShuttleComponent> ent, ref FTLCompletedEvent args);
+    partial void HandleMagneticLatchFtlCompleted(EntityUid uid, IShuttleGrid grid, ref FTLCompletedEvent args);
+
+    private void SubscribeGridEvents<TEvent>(ShuttleGridEventHandler<TEvent> handler) where TEvent : notnull
+    {
+        SubscribeLocalEvent<ShuttleGridComponent, TEvent>((uid, comp, args) => handler(uid, comp, args));
+        SubscribeLocalEvent<StationGridComponent, TEvent>((uid, comp, args) => handler(uid, comp, args));
+        SubscribeLocalEvent<EventGridComponent, TEvent>((uid, comp, args) => handler(uid, comp, args));
+        SubscribeLocalEvent<ShuttleAiGridComponent, TEvent>((uid, comp, args) => handler(uid, comp, args));
+        SubscribeLocalEvent<DebrisGridComponent, TEvent>((uid, comp, args) => handler(uid, comp, args));
+        SubscribeLocalEvent<WrecksGridComponent, TEvent>((uid, comp, args) => handler(uid, comp, args));
+    }
+
+    private void SubscribeGridRefEvents<TEvent>(ShuttleGridRefEventHandler<TEvent> handler) where TEvent : struct
+    {
+        SubscribeLocalEvent<ShuttleGridComponent, TEvent>((uid, comp, ref args) => handler(uid, comp, ref args));
+        SubscribeLocalEvent<StationGridComponent, TEvent>((uid, comp, ref args) => handler(uid, comp, ref args));
+        SubscribeLocalEvent<EventGridComponent, TEvent>((uid, comp, ref args) => handler(uid, comp, ref args));
+        SubscribeLocalEvent<ShuttleAiGridComponent, TEvent>((uid, comp, ref args) => handler(uid, comp, ref args));
+        SubscribeLocalEvent<DebrisGridComponent, TEvent>((uid, comp, ref args) => handler(uid, comp, ref args));
+        SubscribeLocalEvent<WrecksGridComponent, TEvent>((uid, comp, ref args) => handler(uid, comp, ref args));
+    }
 }

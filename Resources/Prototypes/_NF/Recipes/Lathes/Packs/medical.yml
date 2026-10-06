@@ -23,7 +23,7 @@
 
 - type: latheRecipePack
   id: NFMedicalClothingStatic
-  recipes: 
+  recipes:
   - UniformScrubsColorBlue
   - UniformScrubsColorGreen
   - UniformScrubsColorPurple
@@ -35,7 +35,7 @@
 
 - type: latheRecipePack
   id: NFChemistryBasicStatic
-  recipes: 
+  recipes:
   - Jug
   - ChemistryEmptyBottle01
   - ClothingEyesGlassesChemical
@@ -94,7 +94,6 @@
   - DefibrillatorCompact
   - ReinforcedJug
   - BorgModuleAdvancedParamedic
-  - MedicalPouch
 
 - type: latheRecipePack
   id: NFMedical
@@ -102,6 +101,7 @@
   - JugBluespace
   - VialBluespace
   - ClothingOuterHardsuitMedical
+  - ReinforcedJug
 
 - type: latheRecipePack
   id: NFMedicalBoards
@@ -111,3 +111,7 @@
   - ChemMasterMachineCircuitboard
   - ReagentGrinderMachineCircuitboard
   - HotplateMachineCircuitboard
+  - AutodocCircuitboard # Shitmed / Lua Autodoc
+  - OperatingTableCircuitboard # Shitmed
+  - VendingMachineMedicalMachineCircuitboard
+  - VendingMachineChemicalsMachineCircuitboard

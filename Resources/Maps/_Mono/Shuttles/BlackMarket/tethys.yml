@@ -80,10 +80,8 @@ entities:
       bodyType: Dynamic
     - type: Fixtures
       fixtures: {}
-    - type: BecomesStation
-      id: Tethys
     - type: OccluderTree
-    - type: Shuttle
+    - type: ShuttleGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity
@@ -3363,7 +3361,7 @@ entities:
     - type: Transform
       pos: -1.5,2.5
       parent: 1
-- proto: NFWeaponShotgunSawn
+- proto: WeaponShotgunSawn
   entities:
   - uid: 426
     components:

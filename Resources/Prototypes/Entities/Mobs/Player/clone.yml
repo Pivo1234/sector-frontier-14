@@ -42,6 +42,7 @@
   - DamagedSiliconAccent
   - FrenchAccent
   - FrontalLisp
+  - FelinidAccent
   - GermanAccent
   - LizardAccent
   - MobsterAccent
@@ -66,7 +67,6 @@
   - ScandinavianAccent # Frontier
   - ScottishAccent # Frontier
   - StreetpunkAccent # Frontier
-  - BankAccount # Frontier
   - UltraVision # Frontier
   - DogVision # Frontier
   - StinkyTrait # Frontier

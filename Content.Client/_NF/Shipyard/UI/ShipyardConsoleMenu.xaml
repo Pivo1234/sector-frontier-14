@@ -1,9 +1,7 @@
-<!-- Lua start -->
 <controls:FancyWindow xmlns="https://spacestation14.io"
                       xmlns:gfx="clr-namespace:Robust.Client.Graphics;assembly=Robust.Client"
                       xmlns:controls="clr-namespace:Content.Client.UserInterface.Controls"
                       xmlns:ui="clr-namespace:Content.Client.Shuttles.UI"
-                      xmlns:luaShipyard="clr-namespace:Content.Client._Lua.Shipyard.UI"
                       MinSize="1210 675">
     <BoxContainer Orientation="Vertical">
         <BoxContainer Orientation="Horizontal" Margin="3 0" HorizontalExpand="True" VerticalExpand="True">
@@ -65,7 +63,8 @@
                                             Disabled="True"/>
                 </BoxContainer>
                 <PanelContainer VerticalAlignment="Bottom">
-                    <luaShipyard:ShipyardDockRadarControl Name="DockRadar" MinSize="400 400"/>
+                    <LayoutContainer Name="DockRadarHost" MinSize="400 400">
+                    </LayoutContainer>
                     <PanelContainer.PanelOverride>
                         <gfx:StyleBoxFlat BorderColor="#444444" BorderThickness="2"/>
                     </PanelContainer.PanelOverride>
@@ -126,4 +125,3 @@
         </BoxContainer>
     </BoxContainer>
 </controls:FancyWindow>
-<!-- Lua end -->

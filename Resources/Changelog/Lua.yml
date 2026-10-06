@@ -4929,3 +4929,625 @@ Entries:
   id: 329
   time: '2026-08-14T18:38:56.0000000+00:00'
   url: https://github.com/Lua-Frontier/sector-frontier-14/pull/636
+- author: HacksLua
+  changes:
+    - type: Add
+      message: Добавлена работенка датамайнерам, я слишком долго делал обнову...
+    - type: Add
+      message: Добавлена система достижений
+    - type: Add
+      message: Добавлена дорожная карта в лобби
+    - type: Add
+      message: Добавлены бронепластины (PORT Monolith)
+    - type: Add
+      message: Добавлена фракция СССП (роли, лоадауты, снаряжение) (PORT DS-Soyuz)
+    - type: Add
+      message: >-
+        Добавлены вложения для шлема / балаклавы / нарукавные повязки (PORT
+        Monolith)
+    - type: Add
+      message: Добавлен корабельный майнинг-бур
+    - type: Add
+      message: Добавлен компьютер ID карт фракции синдикат и ussp
+    - type: Add
+      message: >-
+        Добавлена предгенерация обломков (Debris Pregen) но отключена в релизе
+        на данный момент
+    - type: Add
+      message: Добавлен админ UI уровней тревоги setalertlevel
+    - type: Add
+      message: Добавлены слоты катомизации (серьги, ожерелье, кольцо, заколка)
+    - type: Add
+      message: Добавлены фракционные анонсы announceui
+    - type: Add
+      message: Добавлена команда playlocalsound
+    - type: Add
+      message: Добавлено расширенное описание персонажа при осмотре
+    - type: Add
+      message: Добавлено кольцо астероидов T2 в секторе СССП начиная с 11000 до 14000
+    - type: Tweak
+      message: Обновлён UI терминалов, в терминал можно теперь вносить валюту фракции
+    - type: Tweak
+      message: >-
+        Оповещения и коды угроз разделены теперь и независимы в каждом секторе,
+        некоторые оповещения видны только на ваших шаттлах (по типу проблем с
+        питанием)
+    - type: Tweak
+      message: 'Консоль вооружения: магниты стыковки отцепляются через ЛКМ'
+    - type: Tweak
+      message: Обновлены турели NPC (софт таргет на персонажей)
+    - type: Tweak
+      message: Обновлена генерация астероидов/обломков
+    - type: Tweak
+      message: Обновлён спавн ИИ дронов/шаттлов по секторам
+    - type: Tweak
+      message: Рефактор загрузки секторов
+    - type: Tweak
+      message: Обновлены двигатели
+    - type: Tweak
+      message: Обновлён брифинг при входе
+    - type: Tweak
+      message: Обновлён лобби / инвентарь UI
+    - type: Tweak
+      message: Техническая оптимизация кода сервера
+    - type: Tweak
+      message: Добавлены категории в Панель спавна предметов
+    - type: Tweak
+      message: Манифест теперь отображает только участников фракции
+    - type: Fix
+      message: Исправлена ошибка дублировавшая роли при уходе в крио
+    - type: Fix
+      message: Исправлен корабельный гарпун
+    - type: Fix
+      message: >-
+        Исправлены тупиковые конструкции
+        https://github.com/Lua-Frontier/sector-frontier-14/issues/638
+    - type: Fix
+      message: >-
+        Исправлен стакинг щитов
+        https://github.com/Lua-Frontier/sector-frontier-14/issues/637
+    - type: Fix
+      message: >-
+        NPC синдиката вновь враждебны для синдиката
+        https://github.com/Lua-Frontier/sector-frontier-14/issues/633
+    - type: Remove
+      message: Удалён режим ShipVsShip и связанные карты/роли
+    - type: Remove
+      message: Удалены карты Anarchy (outpost / cargo depot)
+    - type: Remove
+      message: Удалены неиспользуемые upstream map pools
+  id: 330
+  time: '2026-08-21T16:36:01.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/641
+- author: Firemix
+  changes:
+    - type: Tweak
+      message: >-
+        Механоиды и пилот в нём теперь не тригерят осколки стекла при ходьбе по
+        нему и не получают, исходя из этого, кровотёк и урон.
+  id: 331
+  time: '2026-08-21T16:37:37.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/640
+- author: Maksimvini
+  changes:
+    - type: Add
+      message: Добавлены новые иконки в цвет СРБС.
+    - type: Remove
+      message: Убраны старые чёрные иконки СРБС.
+  id: 332
+  time: '2026-08-21T16:41:01.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/639
+- author: Firemixx
+  changes:
+    - type: Fix
+      message: >-
+        Механоиды теперь не тригерят осколки стекла на земле при ходьбе
+        https://github.com/Lua-Frontier/sector-frontier-14/pull/640
+  id: 333
+  time: '2026-08-21T16:41:01.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/639
+- author: Maksimvini
+  changes:
+    - type: Add
+      message: Добавлено 6 новых Плюшек;
+    - type: Add
+      message: Добавлены новые цветовые виды Боевых Перчаток;
+    - type: Add
+      message: Добавлены новые цветовые виды Плечевых Мантий;
+    - type: Add
+      message: Добавлены новые Укороченные Плечевые Мантии;
+    - type: Add
+      message: Локализация всему добавленному ассортименту
+    - type: Tweak
+      message: >-
+        Изменены зарплаты некоторых ролей, из-за их нетрезвой высоты по
+        сравнению со всеми остальными. Уменьшены зарплаты некоторых АФК-Ролей,
+        на которых игроки не спешат делать задачи. Изменены ЗП на других.
+    - type: Tweak
+      message: Исправлено название плюшки и её айди.
+  id: 334
+  time: '2026-08-28T15:40:22.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/649
+- author: HacksLua
+  changes:
+    - type: Add
+      message: В консоли верфи у каждого шаттла отображается его масса
+    - type: Add
+      message: Масса прописана для всех шаттлов, доступных в верфи
+    - type: Add
+      message: Добавлены ключи доступа к отделам синдиката (для дверей и электроники)
+    - type: Add
+      message: Доступ синдиката для дверей и верфи нф
+    - type: Add
+      message: >-
+        Автохирурги PDV (IAS, дермальная броня E-SAPI, протез сердца VV/KE)
+        можно собирать после изучения в РНД - плата на медтехфабе, затем сборка
+        на машинном каркасе
+    - type: Add
+      message: Цветные шлюзы НФ (синдикат)
+    - type: Add
+      message: Добавлена временная станция СССП
+    - type: Fix
+      message: >-
+        NPC снова считают USSP враждебной фракцией и реагируют на них как на
+        врагов
+    - type: Fix
+      message: >-
+        Автовытаскивание из застревания больше не телепортирует в стены и
+        препятствия
+    - type: Fix
+      message: У карготеха и экипажа Нордфолл не открывались двери на купленном шаттле
+    - type: Fix
+      message: >-
+        У скафандров на базе Atmos и у спонсорских костюмов (Shareholder, FSA и
+        др.) при надевании появлялся не тот шлем
+    - type: Fix
+      message: Фазовый покров больше не виден на полосках здоровья в HUD
+    - type: Fix
+      message: Фазовый покров больше не подсвечивается в тепловизоре
+    - type: Fix
+      message: При полном фазовом покрове персонаж полностью исчезает - без искажения
+    - type: Fix
+      message: >-
+        Закрыт эксплоит - через радиальное меню скафандра больше нельзя
+        подменить ДНК чужого костюма
+    - type: Fix
+      message: >-
+        Автохирурги IAS, дермальной брони и протеза сердца (PDV) изучались в
+        РНД, но нигде не крафтились
+    - type: Fix
+      message: >-
+        Акционер синдиката и другие роли Нордфолла больше не заспавнятся на
+        Центком при «Готов» в лобби
+    - type: Fix
+      message: >-
+        Если на станции нет точки спавна, игрок остаётся в лобби вместо
+        телепорта на чужую станцию
+    - type: Fix
+      message: >-
+        Консоль связи станции объявляет только на своей карте, а не на весь
+        сектор
+    - type: Fix
+      message: >-
+        БСС по звёздной карте больше не выкидывает шаттл внутрь туманности; при
+        отсутствии безопасной точки варп отклоняется
+    - type: Fix
+      message: Черта без акцента корректно снимает акценты (в т.ч. фелинидский).
+    - type: Fix
+      message: Исправлены ERROR печатей на бумаге
+    - type: Tweak
+      message: Обновлена иконка компании USSP в интерфейсе
+    - type: Tweak
+      message: >-
+        Двери с доступом синдиката открываются и по отделам экипажа на шаттле
+        (общие двери корабля)
+    - type: Tweak
+      message: >-
+        Полоски здоровья над головой корректнее обновляются при смене режима
+        отображения
+    - type: Tweak
+      message: >-
+        Спавн унифицирован: company + LateJoin; Ready Job-маркеры мигрируют на
+        job-bound LateJoin, generic SpawnPointLatejoin только без job_id
+    - type: Remove
+      message: >-
+        Убраны flatpack-наборы для PDV-автохирургов - вместо них сборка через
+        плату и каркас
+    - type: Remove
+      message: >-
+        Удалены дубли Ready/Job спавнеров (JS и ЦК non-LJ); миграция на
+        соответствующие LateJoin-маркеры с job_id
+  id: 335
+  time: '2026-08-28T16:03:58.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/643
+- author: HacksLua
+  changes:
+    - type: Tweak
+      message: Технический рефактор ShuttleComponent
+  id: 336
+  time: '2026-08-31T08:22:02.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/650
+- author: HacksLua
+  changes:
+    - type: Tweak
+      message: PORT Статы скафандров Monolith
+    - type: Tweak
+      message: PORT Статы патронов Monolith
+    - type: Tweak
+      message: Синхронизация получаемого/наносимого урона по методам Monolith
+    - type: Tweak
+      message: Откат ID патронов и оружия New Frontier
+  id: 337
+  time: '2026-09-01T17:47:26.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/652
+- author: HacksLua
+  changes:
+    - type: Add
+      message: Добавлена поддержка админ рангов
+    - type: Add
+      message: Добавлены текстурки травы и воды (PORT) Monolith
+    - type: Tweak
+      message: Уменьшены данжи
+    - type: Tweak
+      message: Увеличен лут
+    - type: Add
+      message: Добавлен новый вид Анонсов (PORT) RMC
+    - type: Tweak
+      message: Обновлен UI вендов
+  id: 338
+  time: '2026-09-04T16:11:21.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/653
+- author: HacksLua
+  changes:
+    - type: Add
+      message: >-
+        Добавлена роль Boost (Дискорд бустер) пока с одной игрушкой
+        (placeholder)
+    - type: Add
+      message: Оверлей администратора расширен
+    - type: Fix
+      message: Правки некоторых калибров (ещё не все)
+    - type: Fix
+      message: Исправлены факсы на замороженных картах
+    - type: Tweak
+      message: Удаление ИИ и обломков улучшено
+    - type: Tweak
+      message: Данжи сделаны меньше
+    - type: Tweak
+      message: Рефактор банковской системы, баланс теперь один на всю учетную запись
+  id: 339
+  time: '2026-09-11T12:08:02.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/656
+- author: Voruganka
+  changes:
+    - type: Tweak
+      message: Характеристики Скафандра Голиафа
+  id: 340
+  time: '2026-09-11T12:09:07.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/655
+- author: Maksimvini
+  changes:
+    - type: Add
+      message: >-
+        Добавлены новые шаттлы на верфь ЧРа для гражданских: Comentor_22T, 
+        Faraloner_22T, Dawnbreaker_22T
+    - type: Add
+      message: >-
+        Добавлен новый шаттл на верфь ЧРа для наёмников: Шаттл сопровождения
+        DuranMK2_22T, Линейный шаттл Solution_22T
+  id: 341
+  time: '2026-09-18T13:22:58.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/659
+- author: Айко Окада
+  changes:
+    - type: Tweak
+      message: >-
+        На четырёх шаттлах верфи чёрного рынка (Pathfinder, spectre, sprinter,
+        archer) латунное покрытие было заменено на обычное.
+    - type: Add
+      message: >-
+        На шаттле sprinter под стыковочными шлюзами были добавлены направленные
+        вентиляторы.
+    - type: Tweak
+      message: >-
+        На шаттле sprinter два обычных шлюза были заменены на стеклянные их
+        версии.
+    - type: Remove
+      message: На шаттле sprinter были убраны лишние НВ- и ВВ-провода.
+    - type: Fix
+      message: >-
+        На шаттле spectre исправлено положение ВВ-проводов и теперь они
+        наэлектризовывают решётки под окном целиком.
+  id: 342
+  time: '2026-09-18T13:40:44.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/662
+- author: BrigaDW
+  changes:
+    - type: Add
+      message: Добавлены шаттлы Цербер и Атташе
+  id: 343
+  time: '2026-09-18T13:45:30.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/663
+- author: sokovizhimalka
+  changes:
+    - type: Add
+      message: Добавлены чулочки и туфли в четырёх цветах. Их можно найти в одеждомате
+  id: 344
+  time: '2026-09-18T13:47:28.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/664
+- author: Maksimvini
+  changes:
+    - type: Tweak
+      message: >-
+        Термальная пушка стала менее имбовой, сохраняя свою силу. Изменены типы
+        наносимого урона и работа батарей.
+    - type: Tweak
+      message: >-
+        Револьвер EG-4 стал менее сильным, отходя на ряд "Дополнительного
+        вооружения", но оставаясь умеренно сильным. Изменены типы наносимого
+        урона и работа батарей.
+    - type: Tweak
+      message: Изменены слегка характеристики скафандров из Аплинка Чёрного Рынка.
+    - type: Add
+      message: >-
+        Добавлена слабая защита от ядов скафандрам Чёрного Рынка (5%, 10%, и
+        один скафандр с 20%)
+    - type: Fix
+      message: актуальные описания характеристик в Аплинке Чёрного Рынка.
+  id: 345
+  time: '2026-09-18T14:51:10.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/661
+- author: Maksimvini
+  changes:
+    - type: Add
+      message: Больше нового вооружения в Аплинк ЧРа;
+    - type: Add
+      message: Дробь 4 gauge в аплинки ЧР и ЭИК;
+    - type: Add
+      message: >-
+        БельёДроб, что продаёт бельё. Можно взломать кусачками и Емагнуть для
+        скрытого ассортимента;
+    - type: Add
+      message: >-
+        Базовая локализация в кокос-аплинк пиратов некоторым предметам. Теперь
+        можно понять их смысл
+    - type: Add
+      message: >-
+        Локализация иных предметов, что так-же не имели вообще ничего,
+        подправлена другая локализация на актуал;
+    - type: Tweak
+      message: >-
+        Покупка коробки ЭМИ гранат теперь имеет стоимость в 4 тк, содержит 3
+        гранаты (не как раньше 2 тк и 4 гранаты);
+    - type: Tweak
+      message: >-
+        Изменены характеристики "Анаконда", "Hawk 4", "Куниса", дабы приблизить
+        к баланской версии бесконечного самозарядного оружия, для верфи ЧРа;
+    - type: Fix
+      message: Дюп ТК через ЭМИ-Гранаты путём изменения начинки и стоимости;
+    - type: Fix
+      message: >-
+        ЭИК Аплинк продаёт теперь коробки резиновых обойм с РЕЗИНОВЫМИ
+        патронами, а не FMJ;
+  id: 346
+  time: '2026-09-18T15:58:02.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/657
+- author: 25Hydra08
+  changes:
+    - type: Add
+      message: Добавлен Горизонт (by HolyPain & 25Hydra08)
+    - type: Add
+      message: Добавлена Frontline Solutions
+    - type: Add
+      message: Добавлен Pioneer-II - обычный, НТ
+    - type: Add
+      message: Добавлен Pioneer-IIC - гражданский
+    - type: Add
+      message: Добавлен Pioneer-IIS - после аварии, Scrap верфь
+    - type: Add
+      message: Добавлен Pioneer-IIE - экспедиционный
+    - type: Add
+      message: Добавлены дружелюбные таракамоли
+    - type: Remove
+      message: Удалена фракция СРБС
+    - type: Remove
+      message: Удалён Фронтир
+    - type: Tweak
+      message: Изменен набор HolyPain
+  id: 347
+  time: '2026-09-18T17:12:34.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/666
+- author: HacksLua
+  changes:
+    - type: Tweak
+      message: Глобально переработано РНД
+    - type: Add
+      message: Исследование через сканирование аномалий и артефактов
+    - type: Add
+      message: Добавлены серверы для ускорения анализа
+    - type: Add
+      message: Стартовые технологические наборы по фракциям
+    - type: Add
+      message: >-
+        реконфигуратор серверных технологий для кражи технологий с чужого R&D а
+        так же ремонта серверов ускорения
+    - type: Add
+      message: Платы вендоматов теперь в R&D
+    - type: Add
+      message: >-
+        Изменен метод упаковок, все упаковки преобразованы в платы, ховербайки
+        упакованы как турели
+    - type: Add
+      message: Ядра аномалий теперь можно использовать в модульных гранатах
+    - type: Add
+      message: >-
+        Добавлено в изучение мини генератор аномалий и а так же консоль
+        синхронизатора аномалий
+    - type: Remove
+      message: Удалены аплинки; снаряжение через фракционное R&D
+    - type: Remove
+      message: >-
+        Удалены лишние TechFab, всё что можно создать теперь в большей степени
+        находится в автолатах и протолатах
+    - type: Tweak
+      message: Медипены перенесены на Мед-О-Мат и требуют изучения
+    - type: Tweak
+      message: Техфаб патронов сразу печатает патроны по калибрам (без R&D)
+    - type: Tweak
+      message: Корабельное оружие теперь платы вместо упаковок
+    - type: Tweak
+      message: Базовый боезапас корабельных пушек бесконечный
+    - type: Tweak
+      message: Оружие крафтится и спавнится пустым без обойм
+    - type: Tweak
+      message: Обоймы крафтятся и спавнятся пустыми
+    - type: Tweak
+      message: В техфаб патронов можно вставить обойму и зарядить функцией автозарядки
+    - type: Tweak
+      message: RobustToolbox обновлен до версии 290
+    - type: Fix
+      message: Исправлено большинство калибров вооружения
+  id: 348
+  time: '2026-09-25T16:51:44.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/673
+- author: CQuarian-dev
+  changes:
+    - type: Tweak
+      message: >-
+        Убрано вращение сканера масс в госте/агосте по умолчанию (Кнопки в углу
+        сканера масс позволяют вернуть вращение назад)
+  id: 349
+  time: '2026-09-25T17:18:35.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/669
+- author: Айко Окада
+  changes:
+    - type: Add
+      message: >-
+        На шаттл Xeno добавлен факс, голопад и душ. (теперь факс рассылки смогут
+        приходить)
+    - type: Remove
+      message: >-
+        На входе шаттла Xeno удалены со шлюзов доступы наёмника, но теперь они
+        блокируются по кнопке на стене.
+    - type: Add
+      message: На шаттл DestroyerBM добавлены гоблинские записки! (помогут со светом)
+    - type: Tweak
+      message: >-
+        На шаттле sprinter система питания и газовых труб переработа. Теперь
+        частично находится под мостиками. (ранее система труб была не целой и
+        без выхода в космос)
+    - type: Tweak
+      message: >-
+        На шаттлах adder и fish было заменено латунное покрытие на обычное. (для
+        удобства декорирования)
+    - type: Fix
+      message: >-
+        На шаттлах archer, Pathfinder, spectre, sprinter были исправлены
+        недочёты с заменой покрытия. (пропущенная клетка латуни и под шлюзами
+        поставлены моноплиты)
+  id: 350
+  time: '2026-09-25T17:19:16.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/667
+- author: CQuarian-dev
+  changes:
+    - type: Tweak
+      message: Переработчик материалов больше не издаёт зацикленный звук.
+  id: 351
+  time: '2026-09-25T17:25:29.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/668
+- author: Maksimvini
+  changes:
+    - type: Add
+      message: скафандры СССПшников в меню их выкладки ролей
+    - type: Add
+      message: Durannell, полноценный ремапп шаттла DuranMK2 на верфи ЧР
+    - type: Remove
+      message: DuranMK2 из верфи ЧР
+    - type: Remove
+      message: Удалены Kunisa и hawk4 из Аплинка ЧРа
+    - type: Tweak
+      message: Ремаппнут шаттл Comentor из верфи ЧРа
+    - type: Tweak
+      message: >-
+        Ремаппнуты пять шаттлов верфи пиратов: Baron, Kveldulf, Santinel,
+        Jormungand, Mercury. Укрепления заменены на Шахтёрские стены, Ультра
+        сервера понижены в Высокомощные.
+    - type: Fix
+      message: некоторая локализация наименований.
+    - type: Fix
+      message: >-
+        Пиратские шаттлы из списка выше теперь проходят по shipstat, не имея
+        запрещённых предметов.
+  id: 352
+  time: '2026-09-25T17:29:14.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/671
+- author: 25Hydra08
+  changes:
+    - type: Add
+      message: Добавлен шаттл Gulag by HolyPain
+    - type: Add
+      message: Добавлен шаттл Gegb by HolyPain
+    - type: Add
+      message: Добавлен шаттл Komsomol by HolyPain
+    - type: Add
+      message: Добавлен шаттл Marauder by HolyPain
+    - type: Tweak
+      message: Изменена станция Солнечный-26 в соответствии с маппингом игроков
+    - type: Fix
+      message: Исправлена часть Этических Исключений (болезни, и т.д.)
+    - type: Fix
+      message: Исправлен маппинг Горизонта
+  id: 353
+  time: '2026-09-25T17:55:07.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/672
+- author: CQuarian-dev
+  changes:
+    - type: Add
+      message: >-
+        Новые ремапы шаттлов Нордфолла: Shukra и Azure на замену старых Shukra-F
+        и Shukra-2.
+    - type: Add
+      message: Новый ремап Serpent (Серпент).
+    - type: Tweak
+      message: Небольшой ремап BM-Fish с черного рынка.
+    - type: Tweak
+      message: Изменение цен на некоторые шаттлы Нордфолла.
+    - type: Fix
+      message: >-
+        Исправление и улучшение по мелочи шаттлов Нордфолла, включая критические
+        изменения у Strizh и Skif.
+  id: 354
+  time: '2026-09-25T18:15:06.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/670
+- author: Rendin0
+  changes:
+    - type: Fix
+      message: Исправлена уязвимость копировального аппарата
+  id: 355
+  time: '2026-10-02T13:25:33.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/683
+- author: Maksimvini
+  changes:
+    - type: Tweak
+      message: Частота СССП более не на англ ":p", а на русской ":в"
+  id: 356
+  time: '2026-10-02T13:26:38.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/684
+- author: CQuarian-dev
+  changes:
+    - type: Add
+      message: Ржавые пластитановые стены (только для маппинга)
+  id: 357
+  time: '2026-10-02T13:29:21.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/678
+- author: CQuarian-dev
+  changes:
+    - type: Tweak
+      message: >-
+        Пластитановые и шахтёрские диагональные окна теперь имеют верное
+        название (не "окно шаттла")
+    - type: Fix
+      message: Текстура диагонального пластитанового окна была исправлена
+  id: 358
+  time: '2026-10-02T13:30:35.0000000+00:00'
+  url: https://github.com/Lua-Frontier/sector-frontier-14/pull/679

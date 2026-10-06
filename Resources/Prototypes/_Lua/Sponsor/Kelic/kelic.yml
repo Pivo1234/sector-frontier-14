@@ -1,25 +1,4 @@
 # Backpack
-- type: sponsorLoadout
-  id: Kelic
-  ownerLogin: Kelic
-  tier: god
-  entities:
-    - ClothingBackpackKelic
-    - ClothingNeckKelic
-    - ClothingBeltKelic
-    - ClothingShoesBootsMagKelic
-    - ClothingHandsGlovesCombatKelic
-    - ClothingUniformJumpsuitKelic
-    - ClothingEyesGlassesKelic
-    - ClothingMaskGasKelic
-    - MedkitFilled
-    - SynthesizerInstrument
-    - PDAKelic
-    - ClothingHandsRingDiamondKelic
-    - ClothingHandsRingRubinoKelic
-    - DoubleEmergencyOxygenTankFilled
-    - WeaponCrusherKelic
-    - HypoKelic
 
 - type: entity
   parent: [ClothingBackpack, HardsuitIdentifySponsor]
@@ -35,7 +14,7 @@
   - type: Storage
     maxItemSize: Huge
     grid:
-    - 0,0,19,9
+    - 0,0,7,6
   - type: Tag
     tags: [] # ignore "WhitelistChameleon" tag
   - type: ToggleableClothing
@@ -45,7 +24,7 @@
   - type: ContainerContainer
     containers:
       storagebase: !type:Container
-      toggleable-clothing: !type:ContainerSlot
+      toggleable-clothing: !type:Container
 
 # Belt
 - type: entity
@@ -94,7 +73,13 @@
   - type: Clothing
     sprite: _Lua/Sponsor/Kelic/hardsuit.rsi
   - type: ToggleableClothing
-    clothingPrototype: ClothingHeadHelmetHardsuitKelic
+    requiredSlot: outerclothing
+    blockUnequipWhenAttached: false
+    replaceCurrentClothing: true
+    clothingPrototypes:
+      head: ClothingHeadHelmetHardsuitKelic
+      helmetcover: ClothingHeadHelmetCoverBlock
+      helmetattachment: ClothingHeadHelmetAttachmentBlock
   - type: Item
     size: Huge
   - type: ClothingSpeedModifier
@@ -103,19 +88,20 @@
   - type: Armor
     modifiers:
       coefficients:
-        Blunt: 0.65
-        Slash: 0.65
-        Piercing: 0.6
-        Heat: 0.7
-        Radiation: 0.5
-        Caustic: 0.5
+        Blunt: 0.6
+        Slash: 0.6
+        Piercing: 0.5
+        Heat: 0.3
+        Radiation: 0.1
+        Caustic: 0.45
+        Poison: 0.4
   - type: Tag
     tags: [] # ignore "WhitelistChameleon" tag
   - type: ContainerContainer
     containers:
       storagebase: !type:Container
         ents: []
-      toggleable-clothing: !type:ContainerSlot {}
+      toggleable-clothing: !type:Container {}
       cell_slot: !type:ContainerSlot {}
   - type: HideLayerClothing
     slots:
@@ -140,6 +126,13 @@
   - type: PressureProtection
     highPressureMultiplier: 0.08
     lowPressureMultiplier: 1000
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.9
+        Slash: 0.9
+        Piercing: 0.9
+        Heat: 0.9
   - type: Tag
     tags: [] # ignore "WhitelistChameleon" tag
 
@@ -312,7 +305,7 @@
 
 # Rings
 - type: entity
-  parent: ClothingHandsBase
+  parent: RingBase
   id: ClothingHandsRingDiamondKelic
   name: обручальное кольцо с алмазом
   description: Кольцо из чистой платины, в центре которого находится алмаз. На кольце виднеется гравировка "Эйрин".
@@ -320,15 +313,17 @@
   components:
   - type: Sprite
     sprite: _Lua/Sponsor/Kelic/ring_eirin.rsi
+    state: icon
   - type: Clothing
     sprite: _Lua/Sponsor/Kelic/ring_eirin.rsi
+    equippedState: equipped-FINGER
   - type: Item
     size: Tiny
   - type: StaticPrice
     price: 1000
 
 - type: entity
-  parent: ClothingHandsBase
+  parent: RingBase
   id: ClothingHandsRingRubinoKelic
   name: кольцо с рубином
   description: Кольцо из чистой платины, в центре которого находится рубин. На кольце виднеется гравировка "Келик".
@@ -336,8 +331,10 @@
   components:
   - type: Sprite
     sprite: _Lua/Sponsor/Kelic/ring_kelik.rsi
+    state: icon
   - type: Clothing
     sprite: _Lua/Sponsor/Kelic/ring_kelik.rsi
+    equippedState: equipped-FINGER
   - type: Item
     size: Tiny
   - type: StaticPrice

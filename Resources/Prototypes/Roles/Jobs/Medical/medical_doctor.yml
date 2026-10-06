@@ -4,7 +4,7 @@
   description: job-description-doctor
   playTimeTracker: JobMedicalDoctor
   requiredCompany: Nanotrasen
-  salary: 40000
+  salary: 35000
   setPreference: true # Lua
   requirements:
     - !type:OverallPlaytimeRequirement
@@ -49,6 +49,6 @@
     head: ClothingHeadNurseHat
     eyes: ClothingEyesHudMedical
     mask: ClothingMaskSterile
-    neck: ClothingNeckStethoscope
+    necklace: ClothingNeckStethoscope
     outerClothing: ClothingOuterCoatLab
     gloves: ClothingHandsGlovesLatex

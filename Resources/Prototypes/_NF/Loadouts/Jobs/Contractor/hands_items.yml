@@ -83,16 +83,16 @@
     proto: ContractorT3
   price: 20000
   inhand:
-  - DawInstrumentFlatpack
+  - DawInstrumentMachineCircuitboard
 
 - type: loadout
-  id: ContractorHoverbikeFlatpack
+  id: NFVehicleHoverbikeKeys
   effects:
   - !type:GroupLoadoutEffect
     proto: ContractorT3
   price: 35000
   inhand:
-  - HoverbikeFlatpack
+  - NFVehicleHoverbikeKeys
 
 - type: loadout
   id: ContractorEmotionalPetCarrier
@@ -195,7 +195,7 @@
     proto: ContractorT2
   price: 3000
   inhand:
-    - NFWeaponPka
+    - WeaponProtoKineticAccelerator
 
 - type: loadout
   id: ContractorPinpointerUniversal

@@ -1,0 +1,35 @@
+research-technology-ussp-thruster-small = Двигатель СССП
+research-technology-ussp-thruster-medium = Средний двигатель СССП
+research-technology-ussp-thruster-large = Большой двигатель СССП
+research-technology-universal-armorplates-1 = Баллистические композиты
+research-technology-universal-armorplates-2 = Продвинутые бронепластины
+research-technology-ussp-suits-basic = Базовая экипировка СССП
+research-technology-ussp-suits-medium = Стандартная экипировка СССП
+research-technology-ussp-suits-advanced = Продвинутая экипировка СССП
+research-technology-ussp-explosives-medium = Взрывчатка СССП
+research-technology-ussp-guns-medium = Стандартное вооружение СССП
+research-technology-ussp-guns-ak410 = Специализированное вооружение СССП
+research-technology-ussp-guns-advanced = Продвинутое вооружение СССП
+
+# Split individual USSP technologies
+research-technology-usspbasicsuitsclothingouterhardsuitusspl10ussp = Скафандр СССП L-10
+research-technology-usspbasicsuitsclothingouterhardsuitusspl10aussp = Скафандр СССП L-10-A
+research-technology-usspmediumsuitsclothingouterhardsuitusspl27ussp = Тактический костюм СССП L-27
+research-technology-usspmediumsuitsclothingouterhardsuitusspm10ussp = Разведывательный костюм СССП M-10
+research-technology-usspadvancedsuitsclothingmodsuitusspvaryagussp = Ядро модсьюта СССП "Варяг"
+research-technology-usspadvancedsuitsclothingmodsuitusspzastavnikussp = Ядро модсьюта СССП "Заставник"
+research-technology-usspmediumexplosivesgrenadeshrapnelussp = осколочная граната
+research-technology-usspmediumexplosivesgrenadeincendiaryussp = зажигательная граната
+research-technology-usspmediumexplosivesseismicchargeussp = сейсмический заряд
+research-technology-usspmediumexplosivesteargasgrenadeussp = слезоточивая граната
+research-technology-usspmediumgunsweaponrifleak502ussp = NCI AK-502 (7.62x39mm)
+research-technology-usspmediumgunsweaponrevolvermatebaussp = Матеба
+research-technology-usspak410weaponrifleak410ussp = NCI AK-410 (7.62x54mmR)
+research-technology-usspak410ammobox762x39mmsubsonic = Коробка дозвуковых патронов 7.62x39 мм
+research-technology-usspadvancedgunsweapondp29ussp = DP-29
+research-technology-usspadvancedgunsmagazinedp29 = Магазин DP-29
+research-technology-usspadvancedgunsweaponshotgunbigleadyussp = Big Leady (4 gauge)
+research-technology-universalarmorplatest1armorplateblunt_slash = Бронепластина от тупого и режущего урона
+research-technology-universalarmorplatest1armorplatepierce = Бронепластина от пробития
+research-technology-universalarmorplatest2armorplateheat = Бронепластина от жара
+research-technology-universalarmorplatest2armorplatespeed = Скоростная бронепластина

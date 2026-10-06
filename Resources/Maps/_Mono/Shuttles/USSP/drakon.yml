@@ -61,10 +61,8 @@ entities:
       bodyType: Dynamic
     - type: Fixtures
       fixtures: {}
-    - type: BecomesStation
-      id: Drakon
     - type: OccluderTree
-    - type: Shuttle
+    - type: ShuttleGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity
@@ -2753,7 +2751,7 @@ entities:
     - type: Transform
       pos: 0.5,5.5
       parent: 1
-- proto: ThrusterSecurity
+- proto: ThrusterUSSP
   entities:
   - uid: 2
     components:

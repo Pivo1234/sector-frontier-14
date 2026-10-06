@@ -154,7 +154,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: EventGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity
@@ -3546,7 +3546,7 @@ entities:
       parent: 3
     - type: ContainerContainer
       containers:
-        toggleable-clothing: !type:ContainerSlot
+        toggleable-clothing: !type:Container
           showEnts: False
           occludes: True
           ent: null
@@ -3567,7 +3567,7 @@ entities:
       parent: 6
     - type: ContainerContainer
       containers:
-        toggleable-clothing: !type:ContainerSlot
+        toggleable-clothing: !type:Container
           showEnts: False
           occludes: True
           ent: null

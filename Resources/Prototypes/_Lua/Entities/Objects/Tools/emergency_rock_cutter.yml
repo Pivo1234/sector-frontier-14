@@ -13,5 +13,27 @@
     state: icon
   - type: EmergencyRockCutter
     delay: 4
+  - type: EmergencyLabAssembler
+    sharedPrototypes:
+    - EmergencyLabCircuitImprinter
+    - EmergencyLabAutolathe
+    - EmergencyLabProtolathe
+    - EmergencyLabAnalysisConsole
+    - EmergencyLabDiscoveryAnalysisConsole
+    - EmergencyLabArtifactAnalyzer
+  - type: ItemToggle
+    predictable: false
+    soundActivate:
+      collection: sparks
+    soundDeactivate:
+      collection: sparks
+  - type: UserInterface
+    interfaces:
+      enum.EmergencyLabUiKey.Key:
+        type: EmergencyLabBoundUserInterface
+  - type: ActivatableUI
+    key: enum.EmergencyLabUiKey.Key
+    inHandsOnly: true
+    verbOnly: true
   - type: StaticPrice
-    price: 25
+    price: 0

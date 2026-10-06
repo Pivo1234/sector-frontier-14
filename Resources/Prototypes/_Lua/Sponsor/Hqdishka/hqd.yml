@@ -1,28 +1,6 @@
 # LuaWorld - This file is licensed under AGPLv3
 # Copyright (c) 2025 LuaWorld Contributors
 # See AGPLv3.txt for details.
-- type: sponsorLoadout
-  id: hqdishka
-  ownerLogin: hqdishka
-  tier: tier1
-  entities:
-    - ClothingBackpackIris
-    - ClothingBackpackIrisP
-    - ClothingBackpackIrisRed
-    - IrisHandsRing
-    - HacksHat
-    - HacksPDA
-    - ClothingShoesBootsLua
-    - ClothingNeckCapeLuaDalt
-    - ClothingNeckCapeLuaBlackDalt
-    - ClothingUniformJumpsuitIris
-    - HyposprayLua
-    - ClothingEyesHudLuaTech
-    - PlushieSharkBlack
-    - PlushieIrisLua
-    - PlushieHacksLua
-    - ClothingBeltIrisRed
-    - BlinkImplanterLua
 
 - type: entity
   parent: ClothingBackpack
@@ -37,7 +15,7 @@
   - type: Storage
     maxItemSize: Huge
     grid:
-    - 0,0,13,9
+    - 0,0,7,6
   - type: ClothingSpeedModifier
     walkModifier: 1
     sprintModifier: 1
@@ -48,7 +26,7 @@
   - type: ContainerContainer
     containers:
       storagebase: !type:Container
-      toggleable-clothing: !type:ContainerSlot
+      toggleable-clothing: !type:Container
   - type: StorageFill
     contents:
       - id: PaperLawsIris
@@ -95,10 +73,10 @@
   - type: Armor
     modifiers:
       coefficients:
-        Blunt: 0.4
-        Slash: 0.4
-        Piercing: 0.2
-        Heat: 0.3
+        Blunt: 0.9
+        Slash: 0.9
+        Piercing: 0.9
+        Heat: 0.9
 
 - type: entity
   parent: ClothingOuterHardsuitAtmos
@@ -127,7 +105,9 @@
   - type: ContainerContainer
     containers:
       cell_slot: !type:ContainerSlot
-      toggleable-clothing: !type:ContainerSlot
+      toggleable-clothing: !type:Container
+      storagebase: !type:Container
+        ents: []
   - type: ItemSlots
     slots:
       cell_slot:
@@ -140,12 +120,13 @@
   - type: Armor
     modifiers:
       coefficients:
-        Blunt: 0.4
-        Slash: 0.5
-        Piercing: 0.4
-        Heat: 0.4
-        Radiation: 0.3
-        Caustic: 0.3
+        Blunt: 0.6
+        Slash: 0.6
+        Piercing: 0.5
+        Heat: 0.3
+        Radiation: 0.1
+        Caustic: 0.45
+        Poison: 0.4
   - type: ClothingSpeedModifier
     walkModifier: 0.9
     sprintModifier: 0.9
@@ -156,9 +137,15 @@
     parent: true
     components:
     - type: Stealth
-      minVisibility: 0.1
-      lastVisibility: 0.1
+      minVisibility: -1
+      lastVisibility: -1
   - type: ToggleableClothing
-    clothingPrototype: ClothingHeadHelmetIris
+    requiredSlot: outerclothing
+    blockUnequipWhenAttached: false
+    replaceCurrentClothing: true
+    clothingPrototypes:
+      head: ClothingHeadHelmetIris
+      helmetcover: ClothingHeadHelmetCoverBlock
+      helmetattachment: ClothingHeadHelmetAttachmentBlock
   - type: Item
     size: Huge

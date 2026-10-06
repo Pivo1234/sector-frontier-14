@@ -157,6 +157,11 @@
                                Text="0.0"
                                HorizontalExpand="True"
                                Align="Right"/>
+                        <controls:Label Text="{controls:Loc 'shuttle-console-ship-mass'}"/>
+                        <controls:Label Name="GridMass"
+                               Text="0"
+                               HorizontalExpand="True"
+                               Align="Right"/>
                     </controls:GridContainer>
                     <controls1:StripeBack
                         MinSize="48 48">
@@ -262,8 +267,8 @@
                         <controls:SliderIntInput Name="MaximumShuttleSpeedValue"
                                                  Access="Public"
                                                  MinValue="0"
-                                                 MaxValue="80"
-                                                 Value="80"
+                                                 MaxValue="120"
+                                                 Value="120"
                                                  HorizontalExpand="True"
                                                  ToolTip="{controls:Loc 'shuttle-console-maximum-speed-tooltip'}"/>
                         <controls:Label Text="{controls:Loc 'shuttle-console-maximum-angular-speed'}"/>

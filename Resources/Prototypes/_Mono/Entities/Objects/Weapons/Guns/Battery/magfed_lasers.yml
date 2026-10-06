@@ -31,13 +31,12 @@
     slots:
       gun_magazine:
         name: Magazine
-        startingItem: MilitaryPowerCellMG
         whitelist:
           tags:
           - MilitaryPowerCellMG
   - type: HitscanBatteryAmmoProvider
     proto: MediumOverchargedLaser
-    fireCost: 25
+    fireCost: 15
   - type: Sprite
     sprite: _Mono/Objects/Weapons/Guns/Battery/cell_mg.rsi
     layers:
@@ -95,13 +94,12 @@
     slots:
       gun_magazine:
         name: Magazine
-        startingItem: PulsedPlasmaLaserCanister
         whitelist:
           tags:
           - PPLCell
   - type: HitscanBatteryAmmoProvider
     proto: PulsedPlasma
-    fireCost: 1200 #Lua 3000<1200
+    fireCost: 3000
   - type: Sprite
     sprite: _Mono/Objects/Weapons/Guns/Battery/lrc21.rsi
     layers:

@@ -1,3 +1,4 @@
+using Content.Lua.Shared.Shuttles;
 using Content.Server.Shuttles.Components;
 using Content.Server.Shuttles.Events;
 using Content.Shared.Popups;
@@ -10,6 +11,7 @@ using Robust.Shared.Map.Components;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Audio;
 using Robust.Shared.Audio.Systems;
+using Content.Lua.Shared.Shuttles.Components;
 
 namespace Content.Server.Shuttles.Systems;
 
@@ -126,7 +128,7 @@ public sealed partial class ShuttleConsoleSystem
 
         var shuttleUid = _xformQuery.GetComponent(consoleUid.Value).GridUid;
 
-        if (shuttleUid == null || !TryComp(shuttleUid.Value, out ShuttleComponent? shuttleComp))
+        if (shuttleUid == null || !_gridAccess.TryGetShuttleGrid(shuttleUid.Value, out var shuttleComp))
             return;
 
         if (shuttleComp.Enabled == false)
@@ -170,9 +172,9 @@ public sealed partial class ShuttleConsoleSystem
         _shuttle.FTLToCoordinates(shuttleUid.Value, shuttleComp, adjustedCoordinates, targetAngle);
     }
 
-    private void UpdateConsoles(EntityUid uid, ShuttleComponent? component = null)
+    private void UpdateConsoles(EntityUid uid, IShuttleGrid? component = null)
     {
-        if (!Resolve(uid, ref component))
+        if (component == null && !_gridAccess.TryGetShuttleGrid(uid, out component))
             return;
 
         // Update pilot consoles

@@ -688,6 +688,9 @@
   id: GuideEmbeded
 
 - type: Tag
+  id: GunCanAimShooter
+
+- type: Tag
   id: GunUpgradeDamage
 
 - type: Tag
@@ -1194,6 +1197,15 @@
 
 - type: Tag
   id: Ring
+
+- type: Tag
+  id: Earring
+
+- type: Tag
+  id: Hairpin
+
+- type: Tag
+  id: Necklace
 
 - type: Tag
   id: RipleyCentralControlModule

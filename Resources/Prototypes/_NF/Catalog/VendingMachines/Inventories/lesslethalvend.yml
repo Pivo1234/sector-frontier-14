@@ -2,12 +2,12 @@
   id: LessLethalVendInventory
   startingInventory:
   # Weapons
-    NFWeaponEnergyPistolDisabler: 10
-    NFWeaponRevolverArgentiLessLethal: 10
+    WeaponDisabler: 10
+    WeaponRevolverArgenti: 10
     Stunbaton: 10
   # Magazines
-    SpeedLoader9x19mmRubber: 5 #Lua 30 -> 9x19
-    SpeedLoader357_magnumRubber: 5 #Lua 45 -> Magnum
+    SpeedLoader9x19mmEmpty: 5
+    SpeedLoader357_magnumEmpty: 5
   # Ammo boxes
     AmmoBox9x19mmRubber: 10 #Lua 35 -> 9x19mm
     AmmoBox357_magnumRubber: 10 #Lua 45 -> Magnum
@@ -25,12 +25,12 @@
   id: LessLethalVendPOIInventory
   startingInventory:
   # Weapons
-    NFWeaponEnergyPistolDisabler: 4294967295
-    NFWeaponRevolverArgentiLessLethal: 4294967295
+    WeaponDisabler: 4294967295
+    WeaponRevolverArgenti: 4294967295
     Stunbaton: 4294967295
   # Magazines
-    SpeedLoader9x19mmRubber: 4294967295 #Lua 45 -> Magnum
-    SpeedLoader357_magnumRubber: 4294967295 #Lua 45 -> Magnum
+    SpeedLoader9x19mmEmpty: 4294967295
+    SpeedLoader357_magnumEmpty: 4294967295
   # Ammo boxes
     AmmoBox9x19mmRubber: 4294967295 #Lua 35 -> 9x19mm
     AmmoBox357_magnumRubber: 4294967295 #Lua 45 -> Magnum

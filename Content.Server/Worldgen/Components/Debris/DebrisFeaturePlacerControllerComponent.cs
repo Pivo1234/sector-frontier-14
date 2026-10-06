@@ -1,7 +1,7 @@
 using System.Numerics;
 using Content.Server.Worldgen.Prototypes;
 using Content.Server.Worldgen.Systems.Debris;
-using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototype;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Worldgen.Components.Debris;
 
@@ -9,7 +9,7 @@ namespace Content.Server.Worldgen.Components.Debris;
 ///     This is used for controlling the debris feature placer.
 /// </summary>
 [RegisterComponent]
-[Access(typeof(DebrisFeaturePlacerSystem))]
+[Access(typeof(DebrisFeaturePlacerSystem), typeof(DebrisPregenSystem))]
 public sealed partial class DebrisFeaturePlacerControllerComponent : Component
 {
     /// <summary>
@@ -32,18 +32,24 @@ public sealed partial class DebrisFeaturePlacerControllerComponent : Component
     /// <summary>
     ///     Radius in which there should be no objects for debris to spawn.
     /// </summary>
-    [DataField("safetyZoneRadius")] public float SafetyZoneRadius = 24.0f;
+    [DataField("safetyZoneRadius")] public float SafetyZoneRadius = 54.0f;
 
     /// <summary>
     ///     The noise channel to use as a density controller.
     /// </summary>
-    [DataField("densityNoiseChannel", customTypeSerializer: typeof(PrototypeIdSerializer<NoiseChannelPrototype>))]
-    public string DensityNoiseChannel { get; private set; } = default!;
+    [DataField("densityNoiseChannel")]
+    public ProtoId<NoiseChannelPrototype> DensityNoiseChannel { get; private set; } = default!;
 
     public List<Vector2>? PendingPoints;
 
     public int PendingPointIndex;
 
     public EntityUid? PendingChunk;
+
+    [ViewVariables]
+    public bool Pregenerated;
+
+    [ViewVariables]
+    public Dictionary<Vector2, string> DeferredDebris = new();
 }
 

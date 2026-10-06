@@ -60,7 +60,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: ShuttleGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity
@@ -157,8 +157,6 @@ entities:
           - 0
         chunkSize: 4
     - type: GasTileOverlay
-    - type: BecomesStation
-      id: Ample
     - type: ImplicitRoof
 - proto: AirlockShuttle
   entities:

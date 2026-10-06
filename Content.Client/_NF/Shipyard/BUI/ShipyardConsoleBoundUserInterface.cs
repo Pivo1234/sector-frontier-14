@@ -1,19 +1,23 @@
 using Content.Client._NF.Shipyard.UI;
-using Content.Shared._Lua.Shipyard.Events;
-using Content.Shared._Lua.Shipyard.BUIStates;
+using Content.Lua.Shared.Achievements;
+using Content.Lua.Shared.Shipyard.Events;
+using Content.Lua.Shared.Shipyard.BUIStates;
 using Content.Shared._NF.Shipyard.BUI;
 using Content.Shared._NF.Shipyard.Events;
 using Content.Shared._NF.Shipyard.Prototypes; // Lua
 using Content.Shared.Containers.ItemSlots;
 using Robust.Client.UserInterface;
+using Robust.Shared.Network;
 using Robust.Shared.Prototypes; // Lua
 using static Robust.Client.UserInterface.Controls.BaseButton;
+using Robust.Shared.Prototypes;
 
 namespace Content.Client._NF.Shipyard.BUI;
 
 public sealed class ShipyardConsoleBoundUserInterface : BoundUserInterface
 {
     private ShipyardConsoleMenu? _menu;
+    [Dependency] private readonly INetManager _net = default!;
     // private ShipyardRulesPopup? _rulesWindow; // Frontier
     public int Balance { get; private set; }
 
@@ -35,18 +39,8 @@ public sealed class ShipyardConsoleBoundUserInterface : BoundUserInterface
             _menu.OnRenameShip += RenameShip;
             _menu.OnDockPortSelected += SelectDockPort; // Lua
             _menu.TargetIdButton.OnPressed += _ => SendMessage(new ItemSlotButtonPressedEvent("ShipyardConsole-targetId"));
-
-            // Disable the NFSD popup for now.
-            // var rules = new FormattedMessage();
-            // _rulesWindow = new ShipyardRulesPopup(this);
-            // if (ShipyardConsoleUiKey.Security == (ShipyardConsoleUiKey) UiKey)
-            // {
-            //     rules.AddText(Loc.GetString($"shipyard-rules-default1"));
-            //     rules.PushNewline();
-            //     rules.AddText(Loc.GetString($"shipyard-rules-default2"));
-            //     _rulesWindow.ShipRules.SetMessage(rules);
-            //     _rulesWindow.OpenCentered();
-            // }
+            _menu.SetRadarConsole(Owner);
+            _net.ClientSendMessage(new TryUnlockAchievementMessage(AchievementIds.ComputerShipyard));
         }
     }
 
@@ -93,6 +87,7 @@ public sealed class ShipyardConsoleBoundUserInterface : BoundUserInterface
 
         var vesselId = row.Vessel.ID;
         SendMessage(new ShipyardConsolePurchaseMessage(vesselId));
+        _net.ClientSendMessage(new TryUnlockAchievementMessage(AchievementIds.BuyShuttleFromComputerShipyard));
     }
 
     private void SellShip(ButtonEventArgs args)

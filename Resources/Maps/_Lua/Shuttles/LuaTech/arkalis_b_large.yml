@@ -78,8 +78,6 @@ entities:
     - type: Transform
       pos: -0.520833,-0.5
       parent: invalid
-    - type: BecomesStation
-      id: arkalis
     - type: MapGrid
       chunks:
         -2,0:
@@ -149,7 +147,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: ShuttleGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity

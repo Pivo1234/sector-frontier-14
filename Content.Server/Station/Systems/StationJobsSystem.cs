@@ -1,5 +1,5 @@
 using Content.Server._NF.Station.Components;
-using Content.Server._Lua.Company;
+using Content.Lua.Shared.Company;
 using Content.Server.GameTicking;
 using Content.Server.Preferences.Managers;
 using Content.Server.Station.Components;
@@ -32,7 +32,8 @@ public sealed partial class StationJobsSystem : EntitySystem
     [Dependency] private readonly IServerPreferencesManager _prefsManager = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly GameTicker _gameTicker = default!;
-    [Dependency] private readonly FactionOwnedStationSystem _ownedStations = default!;
+    [Dependency] private readonly IFactionOwnedStationSystem _ownedStations = default!;
+    [Dependency] private readonly StationSystem _station = default!;
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -543,6 +544,9 @@ public sealed partial class StationJobsSystem : EntitySystem
 
         while (query.MoveNext(out var station, out var comp))
         {
+            if (!_station.IsStationSpawnable(station))
+                continue;
+
             if (profile != null && !CanLateJoinStation(profile, station))
                 continue;
 

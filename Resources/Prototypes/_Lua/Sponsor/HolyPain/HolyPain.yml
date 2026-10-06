@@ -1,28 +1,3 @@
-- type: sponsorLoadout
-  id: HolyPain
-  ownerLogin: HolyPain
-  tier: rank3
-  entities:
-    - HolyPainRankKit
-    - BoxPillCanisterHolyPain
-    - PlushieHolyPainEri
-    - BronzeBeaker
-    - BronzeSyringe
-    - BronzeJetInjector
-    - CaressOfALovedOne
-    - DiceBag
-    - MedkitCombatFilled
-    - DefibrillatorCompact
-    - PowerCellAntiqueProto
-    - FoodSnackCheesie
-    - DrinkJuiceOrangeCartonXL
-    - BronzeVisor
-    - ClothingBeltChiefEngineerFilled
-    - JetpackCaptainFilled
-    - MedicalPouchFilledHigh
-    - HolyPainOmnimedTool
-
-#region Сумка
 - type: entity
   parent: ClothingBackpackDuffel
   id: HolyPainRankKit
@@ -35,7 +10,7 @@
   - type: Storage
     maxItemSize: Huge
     grid:
-    - 0,0,14,7
+    - 0,0,11,3 #общее место такое же, поменял расположение ячеек просто
     storageOpenSound:
       collection: CrystalBagOpening
       params:
@@ -97,6 +72,161 @@
   - type: TTS
     voice: Cirilla
   - type: Speech
+  - type: ToggleableClothing
+    clothingPrototype: HolyPainRankKitHardsuit
+    requiredSlot: BACK
+    slot: outerClothing
+  - type: ContainerContainer
+    containers:
+      toggleable-clothing: !type:Container {}
+      cell_slot: !type:ContainerSlot {}
+      storagebase: !type:Container
+        ents: []
+
+#region Доспех
+- type: entity
+  parent: [ ClothingOuterHardsuitAtmos, HardsuitSpeedBuff ]
+  id: HolyPainRankKitHardsuit
+  name: доспех HolyPain
+  description: Адский кузнец, по горло набитый чужими дугами, без устали бьёт молотом под непрестанные вопли слабых. Вопросы морали и судьбы его не интересуют. Совестью пусть мучаются те, кому больше нечем заняться.
+  components:
+  - type: Sprite
+    sprite: _Lua/Sponsor/HolyPain/HolyPainRIG.rsi
+  - type: Clothing
+    sprite: _Lua/Sponsor/HolyPain/HolyPainRIG.rsi
+  - type: ToggleableClothing
+    requiredSlot: outerclothing
+    blockUnequipWhenAttached: false
+    replaceCurrentClothing: true
+    clothingPrototypes:
+      head: HolyPainRankKitHardsuitHelmet
+      helmetcover: ClothingHeadHelmetCoverBlock
+      helmetattachment: ClothingHeadHelmetAttachmentBlock
+  - type: Item
+    size: Huge
+  - type: PressureProtection
+    highPressureMultiplier: 0.05
+    lowPressureMultiplier: 1000
+  - type: ExplosionResistance
+    damageCoefficient: 0.5
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.6
+        Slash: 0.6
+        Piercing: 0.5
+        Heat: 0.3
+        Radiation: 0.1
+        Caustic: 0.45
+        Poison: 0.4
+  - type: ClothingSpeedModifier
+    walkModifier: 0.9
+    sprintModifier: 0.9
+  - type: Tag
+    tags: [] # ignore "WhitelistChameleon" tag
+  - type: ContainerContainer
+    containers:
+      toggleable-clothing: !type:Container
+      storagebase: !type:Container
+        ents: []
+        showEnts: false
+        occludes: true
+      cell_slot: !type:ContainerSlot
+        showEnts: false
+        occludes: true
+      beakerSlot: !type:ContainerSlot # imperial hardsuit injection
+
+#region Шлем
+- type: entity
+  parent: [ ClothingHeadHardsuitBase ]
+  id: HolyPainRankKitHardsuitHelmet
+  name: Энергошлем HolyPain
+  description: Если вы хотите познать секреты вселенной — мыслите единицами измерения энергии, частоты и вибрации...
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Sprite
+    sprite: _Lua/Sponsor/HolyPain/HolyPainRIGHelmet.rsi
+    layers:
+    - state: icon
+    - state: icon-flash
+      visible: false
+      map: [ "light" ]
+  - type: Clothing
+    sprite: _Lua/Sponsor/HolyPain/HolyPainRIGHelmet.rsi
+    equippedPrefix: off
+  - type: EyeProtection
+  - type: FlashImmunity
+  - type: PressureProtection
+    highPressureMultiplier: 0.08
+    lowPressureMultiplier: 1000
+  - type: TemperatureProtection
+    heatingCoefficient: 0.005
+    coolingCoefficient: 0.005
+  - type: FireProtection
+    reduction: 0.95
+  - type: ExplosionResistance
+    damageCoefficient: 0.2
+  - type: Armor
+    showArmorOnExamine: false
+    modifiers:
+      coefficients:
+        Blunt: 0.85
+        Slash: 0.85
+        Piercing: 0.85
+        Heat: 0.85
+        Radiation: 0.90
+        Caustic: 0.90
+        Shock: 0.90
+  - type: SolutionScanner
+  - type: DiseaseProtection
+    protection: 0.2
+  - type: ToggleableVisuals
+    spriteLayer: light
+  - type: ItemTogglePointLight
+  - type: PointLight
+    color: "#68d4ff"
+    radius: 6
+    energy: 3.5
+    enabled: false
+    lightMask: LightMaskCone
+    autoRot: true
+    netsync: false
+  - type: Appearance
+  - type: HandheldLight
+    addPrefix: true
+    blinkingBehaviourId: blinking
+    radiatingBehaviourId: radiating
+  - type: LightBehaviour
+    behaviours:
+      - !type:FadeBehaviour
+        id: radiating
+        interpolate: Linear
+        maxDuration: 2.0
+        startValue: 6.0 # Lua: 6.0<9.0
+        endValue: 4.0 # Lua: 4.0<6.0
+        isLooped: true
+        reverseWhenFinished: true
+      - !type:PulseBehaviour
+        id: blinking
+        interpolate: Nearest
+        maxDuration: 1.0
+        startValue: 0.1
+        endValue: 2.0
+        isLooped: true
+  - type: Battery
+    maxCharge: 600 #lights drain 3/s but recharge of 2 makes this 1/s. Therefore 600 is 10 minutes of light.
+    startingCharge: 600
+  - type: BatterySelfRecharger
+    autoRecharge: true
+    autoRechargeRate: 2 #recharge of 2 makes total drain 1w / s so max charge is 1:1 with time. Time to fully charge should be 5 minutes. Having recharge gives light an extended flicker period which gives you some warning to return to light area.
+  - type: HideLayerClothing
+    slots:
+    - Hair
+    - Snout
+    - HeadTop
+    - HeadSide
+    - Head
+    hideOnToggle: true
 
 #region таблетница
 - type: entity
@@ -301,7 +431,6 @@
   values:
     prefix: holypainplushie-
     count: 17
-
 
 #region бронзовая мензурка
 #база бронзовой мензурки
@@ -522,7 +651,7 @@
 
 #region очки
 - type: entity
-  parent: [ ClothingEyesHudMultiversal, NightVisionComfortBlue ]
+  parent: [ ClothingEyesHudMultiversal ]
   id: BronzeVisor
   name: визор с бронзовой оправой
   description: Высококлассный визор на половину лица, украшенный гравировкой с изображением рыцарских поединков на бронзовой оправе.
@@ -545,6 +674,16 @@
     toggleAction: ToggleThermalVision
   - type: Tag
     tags: []
+  - type: NightVision
+    amplification: 6
+    relayOverlay: true
+    goggleEffect: true
+    action: ActionToggleNightVision
+    viewCircleRadius: 1400
+    viewCircleCount: 1
+    viewCircleSpacing: 280
+    phosphorColor: "#bd902d"
+    lightingColor: "#ffffff6c"
 
 #region омнимед
 - type: entity
@@ -559,3 +698,80 @@
     state: omnimed
   - type: Item
     sprite: _Lua/Sponsor/HolyPain/HolyPainOmnimedTool.rsi
+
+#region сапоги
+- type: entity
+  parent: [ ClothingShoesBootsMagBase, GasTankBase ]
+  id: HolyPainLeatherBoots
+  name: сапоги HolyPain
+  description: Сапоги, разработанный для аэродинамических прыжков, ударов и громких воплей слабаков.
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Sprite
+    sprite: _Lua/Sponsor/HolyPain/HolyPainRIGBoots.rsi
+    state: icon
+  - type: Clothing
+    sprite: _Lua/Sponsor/HolyPain/HolyPainRIGBoots.rsi
+  - type: Magboots
+  - type: GasTank
+    outputPressure: 21.5
+    air:
+      volume: 50
+      temperature: 293.15
+      moles:
+      - 20.5137905
+  - type: Jetpack
+    acceleration: 1.15
+    weightlessModifier: 2.4
+    moleUsage: 0.00085
+    jetpackEffect: JetpackEffectTrailHolyPain
+    radarBlip: true
+  - type: Appearance
+  - type: ClothingSpeedModifier
+    walkModifier: 1
+    sprintModifier: 1
+#фикс бага с отображением балона
+  - type: Item
+    size: Normal
+    sprite: _Lua/Sponsor/HolyPain/HolyPainRIGBoots.rsi
+  - type: Tag
+    tags:
+    - GasTank
+  - type: UseDelay
+    delays:
+      gasTank:
+        length: 1.0
+  - type: ActivatableUI
+    key: enum.SharedGasTankUiKey.Key
+  - type: UserInterface
+    interfaces:
+      enum.SharedGasTankUiKey.Key:
+        type: GasTankBoundUserInterface
+  - type: MeleeWeapon
+    wideAnimationRotation: 45
+    attackRate: 0.8
+    damage:
+      types:
+        Blunt: 10
+
+#region Эффект полёта сапог
+- type: entity
+  id: JetpackEffectTrailHolyPain
+  parent: JetpackEffectBase
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Sprite
+    sprite: _Lua/Effects/jetpack_trails.rsi
+    drawdepth: SmallMobs
+    color: "#2ba100"
+    noRot: true
+    layers:
+    - shader: unshaded
+      state: chem_gas_old
+  - type: RadarBlip
+    radarColor: "#0d4e00"
+    scale: 1.1
+    shape: Circle
+    visibleFromOtherGrids: true
+    requireNoGrid: true
+    maxDistance: 300

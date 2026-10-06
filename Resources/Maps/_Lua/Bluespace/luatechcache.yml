@@ -65,7 +65,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: EventGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity
@@ -332,7 +332,6 @@ entities:
         path: /Audio/Effects/holy.ogg
       baseIndices: {}
     - type: ImplicitRoof
-    - type: ShipCpuLimit
 - proto: ADTClothingBeltSupremeCommanderSheath
   entities:
   - uid: 637
@@ -2896,7 +2895,7 @@ entities:
     - type: Transform
       pos: -3.4957974,-1.2545986
       parent: 1
-- proto: NFWeaponEnergyRifleTemperature
+- proto: WeaponTemperatureGun
   entities:
   - uid: 10
     components:

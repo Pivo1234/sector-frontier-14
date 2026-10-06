@@ -1,15 +1,14 @@
 - type: entity
   id: AirlockDockingMagnet
-  parent: BaseStructure
+  parent: [BaseStructure, ConstructibleMachine]
   name: Magnet
   description: A magnetic grabber.
   components:
-  - type: Docking
-    dockType: Magnet
-    receiveOnly: true
-    radarColor: "#001ec5"
-    highlightedRadarColor: "#4073ff"
   - type: MagneticGrabber
+  - type: FireControllable
+    fireCooldown: 0.5
+  - type: ShipGunType
+    shipType: Other
   - type: DeviceLinkSink
     ports:
     - ShutdownMagnet
@@ -69,3 +68,9 @@
     repairCost: 6
   - type: ArmorThickness
     thickness: 3
+  - type: Machine
+    board: AirlockDockingMagnetCircuitboard
+  - type: ContainerContainer
+    containers:
+      machine_board: !type:Container
+      machine_parts: !type:Container

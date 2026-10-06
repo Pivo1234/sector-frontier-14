@@ -32,10 +32,10 @@
       path: /Audio/Weapons/Guns/Gunshots/hpistol.ogg
   - type: BasicEntityAmmoProvider
     proto: BulletAnaconda
-    capacity: 7
-    count: 7
+    capacity: 7  #Lua
+    count: 7     #Lua
   - type: RechargeBasicEntityAmmo
-    rechargeCooldown: 4
+    rechargeCooldown: 1
     rechargeSound:
       path: /Audio/Weapons/Guns/Cock/shotgun_close.ogg
   - type: AmmoCounter

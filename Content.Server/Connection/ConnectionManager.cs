@@ -9,6 +9,7 @@ using Content.Server.Database;
 using Content.Server.GameTicking;
 using Content.Server.Preferences.Managers;
 using Content.Shared.CCVar;
+using Content.Lua.Common.CLVar;
 using Content.Shared._NF.CCVar; // Frontier
 using Content.Shared.Corvax.CCCVars;
 using Content.Shared.GameTicking;
@@ -21,6 +22,7 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Player;
 using Robust.Shared.Timing;
 using Content.Server._NF.Auth; // Frontier
+using Content.Lua.Common.SitePlayerSync;
 
 /*
  * TODO: Remove baby jail code once a more mature gateway process is established. This code is only being issued as a stopgap to help with potential tiding in the immediate future.
@@ -69,6 +71,7 @@ namespace Content.Server.Connection
         [Dependency] private readonly IAdminManager _adminManager = default!;
         [Dependency] private readonly IEntityManager _entityManager = default!;
         [Dependency] private readonly MiniAuthManager _authManager = default!; //Frontier
+        [Dependency] private readonly ISitePlayerSyncManager _sitePlayerSync = default!; // Lua
 
         private GameTicker? _ticker;
 
@@ -90,6 +93,8 @@ namespace Content.Server.Connection
             _netMgr.Connecting += NetMgrOnConnecting;
             _netMgr.AssignUserIdCallback = AssignUserIdCallback;
             _plyMgr.PlayerStatusChanged += PlayerStatusChanged;
+            _cfg.OnValueChanged(CLVars.DevMode, OnDevModeChanged, invokeImmediately: true);
+            _sitePlayerSync.Initialize();
             // Approval-based IP bans disabled because they don't play well with Happy Eyeballs.
             // _netMgr.HandleApprovalCallback = HandleApproval;
         }
@@ -170,6 +175,7 @@ namespace Content.Server.Connection
                     return;
 
                 await _db.UpdatePlayerRecordAsync(userId, e.UserName, addr, hwid);
+                _sitePlayerSync.NotifyPlayerSeen(userId, e.UserName);
             }
         }
 
@@ -213,11 +219,25 @@ namespace Content.Server.Connection
          * TODO: Jesus H Christ what is this utter mess of a function
          * TODO: Break this apart into is constituent steps.
          */
+        private const string DevModeAllowedUser = "HacksLua";
+        private static bool IsDevModeAllowedUser(string userName) => string.Equals(userName, DevModeAllowedUser, StringComparison.OrdinalIgnoreCase);
+        private void OnDevModeChanged(bool enabled)
+        {
+            if (!enabled) return;
+            var reason = Loc.GetString("lua-devmode-denied");
+            foreach (var session in _plyMgr.Sessions)
+            {
+                if (IsDevModeAllowedUser(session.Name)) continue;
+                session.Channel.Disconnect(reason);
+            }
+        }
+
         private async Task<(ConnectionDenyReason, string, List<BanDef>? bansHit)?> ShouldDeny(
             NetConnectingArgs e)
         {
+            if (_cfg.GetCVar(CLVars.DevMode) && !IsDevModeAllowedUser(e.UserName))
+                return (ConnectionDenyReason.DevMode, Loc.GetString("lua-devmode-denied"), null);
             // Check if banned.
-            var addr = e.IP.Address;
             var userId = e.UserId;
             ImmutableArray<byte>? hwId = e.UserData.HWId;
             if (hwId.Value.Length == 0 || !_cfg.GetCVar(CCVars.BanHardwareIds))
@@ -234,7 +254,7 @@ namespace Content.Server.Connection
                 return (ConnectionDenyReason.NoHwid, Loc.GetString("hwid-required"), null);
             }
 
-            var bans = await _db.GetBansAsync(addr, userId, hwId, modernHwid, includeUnbanned: false);
+            var bans = await _db.GetBansAsync(null, userId, hwId, modernHwid, includeUnbanned: false);
             if (bans.Count > 0)
             {
                 var firstBan = bans[0];

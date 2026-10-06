@@ -6,7 +6,7 @@ HumanoidEndoskeletonNeutral-name = эндоскелет нейтрального
 
 HumanoidEndoskeletonNT-name = эндоскелет гуманоида Nanotrasen
 
-HumanoidEndoskeletonStormCreed-name = эндоскелет гуманоида Кодекса Бури
+HumanoidEndoskeletonPirate-name = эндоскелет гуманоида пиратов
 
 HumanoidEndoskeletonSyndie-name = эндоскелет гуманоида Синдиката
 
@@ -19,7 +19,7 @@ MindControlModuleNeutral-name = модуль контроля сознания �
 
 MindControlModuleNT-name = модуль контроля сознания Nanotrasen
 
-MindControlModuleStormCreed-name = модуль контроля сознания Кодекса Бури
+MindControlModulePirate-name = модуль контроля сознания пиратов
 
 MindControlModuleSyndie-name = модуль контроля сознания Синдиката
 
@@ -30,7 +30,7 @@ PositronicBrain-name = позитронный мозг
 
 EncryptionCommon-name = ключ шифрования общего канала
 
-EncryptionKeyNfsd-name = ключ шифрования СРБС
+EncryptionKeyNfsd-name = ключ шифрования Frontline Solutions
 
 EncryptionKeyFreelance-name = ключ шифрования пустынника
 

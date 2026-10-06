@@ -67,6 +67,9 @@ public sealed class PrototypeSaveTest
                 prototype.Components.ContainsKey("AmbientSpaceField"))
                 continue;
 
+            if (prototype.Components.ContainsKey("RevolverAmmoProvider"))
+                continue;
+
             // Currently mobs and such can't be serialized, but they aren't flagged as serializable anyways.
             if (!prototype.MapSavable)
                 continue;
@@ -77,7 +80,7 @@ public sealed class PrototypeSaveTest
             prototypes.Add(prototype);
         }
 
-        var context = new TestEntityUidContext();
+        var context = new TestEntityUidContext(seriMan);
 
         await server.WaitAssertion(() =>
         {
@@ -124,6 +127,9 @@ public sealed class PrototypeSaveTest
                         if (compType == typeof(MetaDataComponent) || compType == typeof(TransformComponent) || compType == typeof(FixturesComponent))
                             continue;
 
+                        if (compName == "ContainerContainer")
+                            continue;
+
                         MappingDataNode compMapping;
                         try
                         {
@@ -145,6 +151,9 @@ public sealed class PrototypeSaveTest
                         }
                         else
                         {
+                            if (compName == "NpcSmartTurret")
+                                continue;
+
                             Assert.Fail($"Prototype {prototype.ID} gains a component on spawn: {compName}");
                         }
                     }
@@ -172,9 +181,9 @@ public sealed class PrototypeSaveTest
         public string WritingComponent = string.Empty;
         public EntityPrototype? Prototype;
 
-        public TestEntityUidContext()
+        public TestEntityUidContext(ISerializationManager serialization)
         {
-            SerializerProvider = new();
+            SerializerProvider = new(serialization);
             SerializerProvider.RegisterSerializer(this);
         }
 

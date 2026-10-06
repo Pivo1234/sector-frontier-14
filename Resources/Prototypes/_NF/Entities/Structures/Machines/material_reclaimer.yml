@@ -40,7 +40,7 @@
     energy: 1.6
     enabled: false
     color: "#da824d"
-    mask: /Textures/Effects/LightMasks/cone.png
+    lightMask: LightMaskCone
     autoRot: true
     offset: "0, 0.4"
     castShadows: false
@@ -83,7 +83,7 @@
       - Brain
       tags:
       - HighRiskItem
-    soundCooldown: 0
+    soundCooldown: 0.8
     sound:
       path: /Audio/Ambience/Objects/crushing.ogg
       params:

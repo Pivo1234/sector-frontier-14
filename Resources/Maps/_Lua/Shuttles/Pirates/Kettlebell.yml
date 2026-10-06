@@ -39,8 +39,6 @@ entities:
       rot: 0.08726646259971647 rad
       pos: 100.30195,0.15719454
       parent: invalid
-    - type: BecomesStation
-      id: Kettlebell
     - type: MapGrid
       chunks:
         0,0:
@@ -78,7 +76,7 @@ entities:
       fixtures: {}
     - type: OccluderTree
     - type: SpreaderGrid
-    - type: Shuttle
+    - type: ShuttleGrid
       dampingModifier: 0.45
     - type: GridPathfinding
     - type: Gravity
@@ -3209,7 +3207,7 @@ entities:
     - type: Physics
       canCollide: False
     - type: InsideEntityStorage
-- proto: NFWeaponRevolverRitland45
+- proto: WeaponRevolverPython
   entities:
   - uid: 206
     components:
@@ -3218,7 +3216,7 @@ entities:
     - type: Physics
       canCollide: False
     - type: InsideEntityStorage
-- proto: NFWeaponShotgunSawn
+- proto: WeaponShotgunSawn
   entities:
   - uid: 344
     components:

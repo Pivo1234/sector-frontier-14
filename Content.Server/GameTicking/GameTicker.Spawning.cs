@@ -1,4 +1,5 @@
 using Content.Server._Corvax.Respawn; // Frontier
+using Content.Lua.Shared.Sectors;
 using Content.Server.Administration.Managers;
 using Content.Server.Administration.Systems;
 using Content.Server.GameTicking.Events;
@@ -6,7 +7,7 @@ using Content.Server.Ghost;
 using Content.Server.Spawners.Components;
 using Content.Server.Speech.Components;
 using Content.Server.Station.Components;
-using Content.Server._Lua.AutoSalarySystem; // Lua
+using Content.Lua.Shared.AutoSalary;
 using Content.Server._NF.Station.Components;
 using Content.Shared._NF.Roles.Components; // Frontier
 using Content.Shared.CCVar;
@@ -59,6 +60,9 @@ namespace Content.Server.GameTicking
             var query = EntityQueryEnumerator<StationJobsComponent, StationSpawningComponent>();
             while (query.MoveNext(out var uid, out _, out _))
             {
+                if (!_station.IsStationSpawnable(uid))
+                    continue;
+
                 spawnableStations.Add(uid);
             }
 
@@ -195,6 +199,13 @@ namespace Content.Server.GameTicking
                 return;
             }
 
+            if (station != EntityUid.Invalid && !_station.IsStationSpawnable(station))
+            {
+                _chatManager.DispatchServerMessage(player,
+                    Loc.GetString("game-ticker-latejoin-station-unavailable", ("stationName", Name(station))));
+                return;
+            }
+
             if (_mind.TryGetMind(player.UserId, out var oldMindId, out var oldMind) &&
                 oldMind.OwnedEntity is { } oldEntity)
             {
@@ -300,17 +311,18 @@ namespace Content.Server.GameTicking
 
             _playTimeTrackings.PlayerRolesChanged(player);
 
-            // Delta-V: Add AlwaysUseSpawner.
             var spawnPointType = SpawnPointType.Unset;
             if (jobPrototype.AlwaysUseSpawner)
+                spawnPointType = SpawnPointType.LateJoin;
+
+            var mobMaybe = _stationSpawning.SpawnPlayerCharacterOnStation(station, jobId, character, spawnPointType: spawnPointType, session: player);
+            if (mobMaybe == null)
             {
-                lateJoin = false;
-                spawnPointType = SpawnPointType.Job;
+                HandleSpawnFailure(player, lateJoin, newMind);
+                return;
             }
 
-            var mobMaybe = _stationSpawning.SpawnPlayerCharacterOnStation(station, jobId, character, spawnPointType: spawnPointType, session: player); // Frontier: add session
-            DebugTools.AssertNotNull(mobMaybe);
-            var mob = mobMaybe!.Value;
+            var mob = mobMaybe.Value;
 
             _mind.TransferTo(newMind, mob);
 
@@ -344,13 +356,10 @@ namespace Content.Server.GameTicking
                 }
                 else
                 {
-                    _chatSystem.DispatchStationAnnouncement(station,
-                        Loc.GetString("latejoin-arrival-announcement",
-                            ("character", MetaData(mob).EntityName),
-                            ("entity", mob),
-                            ("job", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(jobName))),
-                        Loc.GetString("latejoin-arrival-sender"),
-                        playDefaultSound: false);
+                    _chatManager.SendAdminAnnouncement(Loc.GetString("latejoin-arrival-announcement",
+                        ("character", MetaData(mob).EntityName),
+                        ("entity", mob),
+                        ("job", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(jobName))));
                 }
 
                 // Frontier: send new player message if the player is new.
@@ -483,6 +492,27 @@ namespace Content.Server.GameTicking
                 : trimmed;
         }
 
+        private void HandleSpawnFailure(ICommonSession player, bool lateJoin, EntityUid? mindId = null)
+        {
+            if (mindId != null)
+                _mind.WipeMind(mindId);
+
+            if (lateJoin)
+            {
+                _chatManager.DispatchServerMessage(player, Loc.GetString("game-ticker-player-no-spawn-available"));
+                return;
+            }
+
+            if (LobbyEnabled)
+            {
+                _playerGameStatuses[player.UserId] = PlayerGameStatus.NotReadyToPlay;
+                RaiseNetworkEvent(GetStatusMsg(player), player.Channel);
+            }
+
+            RaiseLocalEvent(new NoJobsAvailableSpawningEvent(player));
+            _chatManager.DispatchServerMessage(player, Loc.GetString("game-ticker-player-no-spawn-available"));
+        }
+
         public void Respawn(ICommonSession player)
         {
             if (_mind.TryGetMind(player.UserId, out var mindId, out var mind))
@@ -611,7 +641,7 @@ namespace Content.Server.GameTicking
                 var spawn = _robustRandom.Pick(_possiblePositions);
                 var toMap = _transform.ToMapCoordinates(spawn);
 
-                if (_mapManager.TryFindGridAt(toMap, out var gridUid, out _))
+                if (_map.TryFindGridAt(toMap, out var gridUid, out _))
                 {
                     var gridXform = Transform(gridUid);
 
@@ -621,9 +651,10 @@ namespace Content.Server.GameTicking
                 return spawn;
             }
 
-            if (_map.MapExists(DefaultMap))
+            var sectors = EntityManager.System<ISectorSystem>();
+            if (sectors.TryGetHubMapId(out var hubMap) && _map.MapExists(hubMap))
             {
-                var mapUid = _map.GetMapOrInvalid(DefaultMap);
+                var mapUid = _map.GetMapOrInvalid(hubMap);
                 if (!TerminatingOrDeleted(mapUid))
                     return new EntityCoordinates(mapUid, Vector2.Zero);
             }

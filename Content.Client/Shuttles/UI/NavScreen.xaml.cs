@@ -24,11 +24,12 @@ public sealed partial class NavScreen : BoxContainer
     private EntityUid? _shuttleEntity;
 
     private double _hudUpdateAccum;
-    private const double HudUpdateInterval = 0.2;
+    private const double HudUpdateInterval = 1.0;
     private Vector2? _lastWorldPos;
     private float? _lastDisplayRotDeg;
     private Vector2? _lastLinearVel;
     private float? _lastAngularVelDeg;
+    private int? _lastMass;
     // Lua
     public readonly Dictionary<NetEntity, Button> WeaponsList = new();
     private readonly Dictionary<NetEntity, ShipGunType> _weaponTypes = new();
@@ -218,9 +219,7 @@ public sealed partial class NavScreen : BoxContainer
         _weaponTypes.Clear();
         foreach (var controllable in controllables)
         {
-            var entity = _entManager.GetEntity(controllable.NetEntity);
-            if (_entManager.TryGetComponent<ShipGunTypeComponent>(entity, out var typeComp))
-            { _weaponTypes[controllable.NetEntity] = typeComp.Type; }
+            _weaponTypes[controllable.NetEntity] = controllable.Type;
             if (WeaponsList.TryGetValue(controllable.NetEntity, out _))
             { toRemove.Remove(controllable.NetEntity); }
             else
@@ -289,7 +288,12 @@ public sealed partial class NavScreen : BoxContainer
 
     private void OnSelectAllWeapons(BaseButton.ButtonEventArgs args)
     {
-        foreach (var button in WeaponsList.Values) button.Pressed = true;
+        foreach (var (netEntity, button) in WeaponsList)
+        {
+            if (!_weaponTypes.TryGetValue(netEntity, out var type) || type == ShipGunType.Other)
+                continue;
+            button.Pressed = true;
+        }
         NotifyWeaponSelectionChanged();
     }
 
@@ -357,6 +361,13 @@ public sealed partial class NavScreen : BoxContainer
         {
             GridAngularVelocity.Text = Loc.GetString("shuttle-console-angular-velocity-value", ("angularVelocity", $"{angularVelDeg + 10f * float.Epsilon:0.0}"));
             _lastAngularVelDeg = angularVelDeg;
+        }
+
+        var mass = (int) MathF.Round(gridBody.Mass);
+        if (!_lastMass.HasValue || mass != _lastMass.Value)
+        {
+            GridMass.Text = Loc.GetString("shuttle-console-ship-mass-value", ("mass", mass));
+            _lastMass = mass;
         }
     }
 }

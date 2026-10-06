@@ -11,7 +11,7 @@
   - type: BallisticAmmoProvider
     whitelist:
       tags:
-        - NFCartridgeRifle20
+        - Cartridge556x45mmFMJ
     capacity: 8
   - type: Sprite
   - type: ContainerContainer
@@ -21,11 +21,12 @@
 
 - type: entity
   id: SpeedLoaderRifleHeavy
+  categories: [ HideSpawnMenu ]
   name: "speed loader (.20 rifle)"
   parent: BaseSpeedLoaderHeavyRifle
   components:
   - type: BallisticAmmoProvider
-    proto: NFCartridgeRifle20
+    proto: Cartridge556x45mmFMJ
   - type: Icon
     sprite: _NF/Objects/Weapons/Guns/Ammunition/SpeedLoaders/HeavyRifle/argenti_speed_loader.rsi
     state: icon
@@ -51,6 +52,7 @@
 
 - type: entity
   id: SpeedLoaderRifleHeavyEmpty
+  categories: [ HideSpawnMenu ]
   name: "speed loader (.20 rifle, any)"
   parent: SpeedLoaderRifleHeavy
   components:
@@ -69,11 +71,12 @@
 
 - type: entity
   id: SpeedLoaderRifleHeavyIncendiary
+  categories: [ HideSpawnMenu ]
   name: "speed loader (.20 rifle, incendiary)"
   parent: BaseSpeedLoaderHeavyRifle
   components:
   - type: BallisticAmmoProvider
-    proto: NFCartridgeRifle20Incendiary
+    proto: Cartridge556x45mmIncendiary
   - type: Sprite
     sprite: _NF/Objects/Weapons/Guns/Ammunition/SpeedLoaders/HeavyRifle/argenti_speed_loader.rsi
     layers:
@@ -89,11 +92,12 @@
 
 - type: entity
   id: SpeedLoaderRifleHeavyPractice
+  categories: [ HideSpawnMenu ]
   name: "speed loader (.20 rifle, practice)"
   parent: BaseSpeedLoaderHeavyRifle
   components:
   - type: BallisticAmmoProvider
-    proto: NFCartridgeRifle20Practice
+    proto: Cartridge556x45mmPractice
   - type: Icon
     sprite: _NF/Objects/Weapons/Guns/Ammunition/SpeedLoaders/HeavyRifle/argenti_speed_loader.rsi
     state: practice-icon
@@ -112,11 +116,12 @@
 
 - type: entity
   id: SpeedLoaderRifleHeavyUranium
+  categories: [ HideSpawnMenu ]
   name: "speed loader (.20 rifle, uranium)"
   parent: BaseSpeedLoaderHeavyRifle
   components:
   - type: BallisticAmmoProvider
-    proto: NFCartridgeRifle20Uranium
+    proto: Cartridge556x45mmUranium
   - type: Icon
     sprite: _NF/Objects/Weapons/Guns/Ammunition/SpeedLoaders/HeavyRifle/argenti_speed_loader.rsi
     state: uranium-icon
@@ -135,11 +140,12 @@
 
 - type: entity
   id: SpeedLoaderRifleHeavyRubber
+  categories: [ HideSpawnMenu ]
   name: "speed loader (.20 rifle, rubber)"
   parent: BaseSpeedLoaderHeavyRifle
   components:
   - type: BallisticAmmoProvider
-    proto: NFCartridgeRifle20Rubber
+    proto: Cartridge556x45mmRubber
   - type: Icon
     sprite: _NF/Objects/Weapons/Guns/Ammunition/SpeedLoaders/HeavyRifle/argenti_speed_loader.rsi
     state: rubber-icon

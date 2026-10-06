@@ -18,7 +18,7 @@
   components:
   - type: Blueprint
     providedRecipes:
-    - NFWeaponEnergyRifleSniperXrayCannon
+    - WeaponXrayCannon
 
 - type: entity
   parent: NFBaseBlueprintExpeditionArmory
@@ -28,7 +28,7 @@
   components:
   - type: Blueprint
     providedRecipes:
-    - NFWeaponEnergyRifleTemperature
+    - WeaponTemperatureGun
 
 # Tools
 

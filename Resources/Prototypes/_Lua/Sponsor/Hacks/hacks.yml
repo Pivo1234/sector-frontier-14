@@ -2,32 +2,6 @@
 # Copyright (c) 2025 LuaWorld Contributors
 # See AGPLv3.txt for details.
 
-- type: sponsorLoadout
-  id: hackslua
-  ownerLogin: HacksLua
-  tier: rank1
-  entities:
-    - ClothingBackpackLuaD
-    - ClothingBackpackLuaB
-    - ClothingBackpackLua
-    - ClothingHandsGlovesCombatLua
-    - ClothingBeltLua
-    - ClothingShoesBootsLua
-    - ClothingUniformJumpsuitMedicLua
-    - BlinkImplanterLua
-    - HacksHat
-    - HacksPDA
-    - HacksHandsRing
-    - ClothingNeckCapeLuaDalt
-    - ClothingNeckCapeLuaBlackDalt
-    - HyposprayLua
-    - ClothingEyesHudLuaTech
-    - PlushieSharkBlack
-    - PlushieIrisLua
-    - PlushieHacksLua
-    - WeaponCaseShortLua
-    - ShipVoucherLuaTechSimple
-
 - type: entity
   parent: ClothingBackpack
   id: ClothingBackpackLua
@@ -55,7 +29,7 @@
   - type: ContainerContainer
     containers:
       storagebase: !type:Container
-      toggleable-clothing: !type:ContainerSlot
+      toggleable-clothing: !type:Container
   - type: StorageFill
     contents:
       - id: PaperLawsLua
@@ -102,10 +76,10 @@
   - type: Armor
     modifiers:
       coefficients:
-        Blunt: 0.4
-        Slash: 0.4
-        Piercing: 0.2
-        Heat: 0.3
+        Blunt: 0.9
+        Slash: 0.9
+        Piercing: 0.9
+        Heat: 0.9
 
 - type: entity
   parent: [ ClothingOuterHardsuitAtmos, BaseToggleClothing ]
@@ -140,7 +114,9 @@
   - type: ContainerContainer
     containers:
       cell_slot: !type:ContainerSlot
-      toggleable-clothing: !type:ContainerSlot
+      toggleable-clothing: !type:Container
+      storagebase: !type:Container
+        ents: []
   - type: ItemSlots
     slots:
       cell_slot:
@@ -153,12 +129,13 @@
   - type: Armor
     modifiers:
       coefficients:
-        Blunt: 0.4
-        Slash: 0.5
-        Piercing: 0.4
-        Heat: 0.4
-        Radiation: 0.3
-        Caustic: 0.3
+        Blunt: 0.6
+        Slash: 0.6
+        Piercing: 0.5
+        Heat: 0.3
+        Radiation: 0.1
+        Caustic: 0.45
+        Poison: 0.4
   - type: ClothingSpeedModifier
     walkModifier: 0.9
     sprintModifier: 0.9
@@ -169,10 +146,16 @@
     parent: true
     components:
     - type: Stealth
-      minVisibility: 0.1
-      lastVisibility: 0.1
+      minVisibility: -1
+      lastVisibility: -1
   - type: ToggleableClothing
-    clothingPrototype: ClothingHeadHelmetLua
+    requiredSlot: outerclothing
+    blockUnequipWhenAttached: false
+    replaceCurrentClothing: true
+    clothingPrototypes:
+      head: ClothingHeadHelmetLua
+      helmetcover: ClothingHeadHelmetCoverBlock
+      helmetattachment: ClothingHeadHelmetAttachmentBlock
   - type: Item
     size: Huge
   - type: HardsuitReanimation

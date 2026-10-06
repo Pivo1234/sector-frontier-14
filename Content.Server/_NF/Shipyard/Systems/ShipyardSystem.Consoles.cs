@@ -1,9 +1,8 @@
 using Content.Shared._NF.Bank;
-using Content.Server._Lua.ShipProtection;
-using Content.Server._Lua.Shipyard.Systems;
+using Content.Lua.Shared.ShipProtection;
 using Content.Server._Mono.Ships.Systems;
 using Content.Server._Mono.Shipyard;
-using Content.Server._NF.Bank;
+using Content.Lua.Shared.Bank;
 using Content.Server._NF.Shipyard.Components;
 using Content.Server._NF.ShuttleRecords;
 using Content.Server._NF.Station.Components;
@@ -21,16 +20,16 @@ using Content.Server.Shuttles.Systems;
 using Content.Server.StationEvents.Components;
 using Content.Server.StationRecords;
 using Content.Server.StationRecords.Systems;
-using Content.Shared._Lua.Chat.Systems; // Lua
-using Content.Shared._Lua.LuaTech; // Lua
+using Content.Shared.Chat.Systems;
+using Content.Shared.LuaTech;
 using Content.Shared._Mono.Company;
 using Content.Shared._Mono.Ships.Components;
 using Content.Shared._Mono.Shipyard;
 using Content.Shared._NF.Bank.BUI;
-using Content.Shared._NF.Bank.Components;
 using Content.Shared._NF.Shipyard;
 using Content.Shared._NF.Shipyard.BUI;
 using Content.Shared._NF.Shipyard.Components;
+using Content.Lua.Shared.Shipyard.Components;
 using Content.Shared._NF.Shipyard.Events;
 using Content.Shared._NF.Shipyard.Prototypes;
 using Content.Shared._NF.ShuttleRecords;
@@ -41,11 +40,11 @@ using Content.Shared.Construction.Components;
 using Content.Shared.Database;
 using Content.Shared.Forensics.Components;
 using Content.Shared.Ghost;
-using Content.Shared.Lua.CLVar;
+using Content.Lua.Common.CLVar;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Preferences;
 using Content.Shared.Radio;
-using Content.Shared._Lua.Shipyard.BUIStates;
+using Content.Lua.Shared.Shipyard.BUIStates;
 using Content.Shared.Shuttles.Components;
 using Content.Shared.StationRecords;
 using Content.Shared.Tag;
@@ -75,7 +74,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
     [Dependency] private readonly UserInterfaceSystem _ui = default!;
     [Dependency] private readonly RadioSystem _radio = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
-    [Dependency] private readonly BankSystem _bank = default!;
+    [Dependency] private readonly IBankSystem _bank = default!;
     [Dependency] private readonly IdCardSystem _idSystem = default!;
     [Dependency] private readonly StationRecordsSystem _records = default!;
     [Dependency] private readonly ChatSystem _chat = default!;
@@ -122,7 +121,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
             return;
         }
 
-        if (component.ParkingConsole)
+        if (TryComp(shipyardConsoleUid, out ShipyardLuaConsoleComponent? luaParking) && luaParking.ParkingConsole)
         {
             HandleParkingPurchase(shipyardConsoleUid, component, player, targetId);
             return;
@@ -183,7 +182,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
             targetGridForLuaTech = gridUid;
         }
 
-        if (!TryComp<BankAccountComponent>(player, out var bank))
+        if (!_bank.TryGetBalance(player, out var balance))
         {
             ConsolePopup(player, Loc.GetString("shipyard-console-no-bank"));
             PlayDenySound(player, shipyardConsoleUid, component);
@@ -222,7 +221,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
         }
         else
         {
-            if (bank.Balance <= vessel.Price)
+            if (balance <= vessel.Price)
             {
                 ConsolePopup(player, Loc.GetString("cargo-console-insufficient-funds", ("cost", vessel.Price)));
                 PlayDenySound(player, shipyardConsoleUid, component);
@@ -248,7 +247,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
         }
 
         var shuttleUid = shuttleUidOut.Value;
-        if (!_entityManager.TryGetComponent<ShuttleComponent>(shuttleUid, out var shuttle))
+        if (!_gridAccess.TryGetShuttleGrid(shuttleUid, out var shuttle))
         {
             ConsolePopup(player, Loc.GetString("cargo-console-insufficient-funds", ("cost", vessel.Price)));
             PlayDenySound(player, shipyardConsoleUid, component);
@@ -396,8 +395,9 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
                 _records.CreateGeneralRecord(shuttleStation.Value, targetId, profile.Name, profile.Age, profile.Species, profile.Gender, $"Captain", fingerprintComponent!.Fingerprint, dnaComponent!.DNA, profile, stationRec!);
             }
         }
-        if (shuttleStation != null) _records.Synchronize(shuttleStation.Value);
-        if (hasStation)
+        if (shuttleStation != null && HasComp<StationRecordsComponent>(shuttleStation.Value))
+            _records.Synchronize(shuttleStation.Value);
+        if (hasStation && HasComp<StationRecordsComponent>(station))
             _records.Synchronize(station);
 
         EntityManager.AddComponents(shuttleUid, vessel.AddComponents);
@@ -405,7 +405,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
         // Lua
         if (isLuaTech)
         {
-            var shipProtection = _entityManager.System<ShipProtectionSystem>();
+            var shipProtection = _entityManager.System<IShipProtectionSystem>();
             var protectionDuration = TimeSpan.FromMinutes(30);
             var xformQuery = GetEntityQuery<TransformComponent>();
             var machineQuery = AllEntityQuery<MachineComponent, TransformComponent>();
@@ -467,14 +467,16 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
                     entityUid: EntityManager.GetNetEntity(shuttleUid),
                     purchasedWithVoucher: voucherUsed,
                     purchasePrice: (uint)vessel.Price,
-                    vesselPrototypeId: vessel.ID
+                    vesselPrototypeId: vessel.ID,
+                    buyerBalance: balance
                 )
             );
         }
 
         var purchaseEv = new ShipyardShuttlePurchaseEvent(shuttleUid, player); // Mono: half of this shit could be an event.
         RaiseLocalEvent(purchaseEv);
-        RefreshState(shipyardConsoleUid, bank.Balance, true, name, sellValue, targetId, (ShipyardConsoleUiKey)args.UiKey, voucherUsed);
+        _bank.TryGetBalance(player, out balance);
+        RefreshState(shipyardConsoleUid, balance, true, name, sellValue, targetId, (ShipyardConsoleUiKey)args.UiKey, voucherUsed);
     }
 
     private void TryParseShuttleName(ShuttleDeedComponent deed, string name)
@@ -510,7 +512,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
             return;
         }
 
-        if (component.ParkingConsole)
+        if (TryComp(uid, out ShipyardLuaConsoleComponent? luaParking) && luaParking.ParkingConsole)
         {
             HandleParkingSell(uid, component, player, targetId);
             return;
@@ -525,7 +527,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
 
         bool voucherUsed = deed.PurchasedWithVoucher;
 
-        if (!TryComp<BankAccountComponent>(player, out var bank))
+        if (!_bank.TryGetBalance(player, out var balance))
         {
             ConsolePopup(player, Loc.GetString("shipyard-console-no-bank"));
             PlayDenySound(player, uid, component);
@@ -566,7 +568,8 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
             {
                 //_records.RemoveRecord(keyStorage.Key.Value);
                 _records.AddRecordEntry(stationUid, record);
-                _records.Synchronize(stationUid);
+                if (HasComp<StationRecordsComponent>(stationUid))
+                    _records.Synchronize(stationUid);
             }
         }
 
@@ -623,7 +626,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
             foreach (var (account, taxCoeff) in component.TaxAccounts)
             {
                 var tax = CalculateSalesTax(originalBill, taxCoeff);
-                _bank.TrySectorDeposit(account, tax, LedgerEntryType.BlackMarketShipyardTax);
+                _bank.TrySectorDeposit(account, tax, LedgerEntryType.BlackMarketShipyardTax, uid);
                 bill -= tax;
             }
             bill = int.Max(0, bill);
@@ -653,7 +656,8 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
             refreshId = null;
         }
 
-        RefreshState(uid, bank.Balance, true, null, 0, refreshId, (ShipyardConsoleUiKey)args.UiKey, voucherUsed);
+        _bank.TryGetBalance(player, out balance);
+        RefreshState(uid, balance, true, null, 0, refreshId, (ShipyardConsoleUiKey)args.UiKey, voucherUsed);
     }
 
     /// <summary>
@@ -696,7 +700,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
 
         var voucherUsed = HasComp<ShipyardVoucherComponent>(targetId);
 
-        if (component.ParkingConsole)
+        if (TryComp(uid, out ShipyardLuaConsoleComponent? luaParking) && luaParking.ParkingConsole)
         {
             RefreshParkingState(uid, deed != null ? GetFullName(deed) : null, targetId);
             return;
@@ -705,7 +709,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
         //      mayhaps re-enable this later for HoS/SA
         //        var station = _station.GetOwningStation(uid);
 
-        if (!TryComp<BankAccountComponent>(player, out var bank))
+        if (!_bank.TryGetBalance(player, out var balance))
             return;
 
         int sellValue = 0;
@@ -725,7 +729,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
             // For now we'll just let them see the cooldown message when they try to use it
         }
 
-        RefreshState(uid, bank.Balance, true, fullName, sellValue, targetId, (ShipyardConsoleUiKey)args.UiKey, voucherUsed);
+        RefreshState(uid, balance, true, fullName, sellValue, targetId, (ShipyardConsoleUiKey)args.UiKey, voucherUsed);
     }
 
     private void ConsolePopup(EntityUid uid, string text)
@@ -811,13 +815,13 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
 
             var voucherUsed = HasComp<ShipyardVoucherComponent>(targetId);
 
-            if (component.ParkingConsole)
+            if (TryComp(uid, out ShipyardLuaConsoleComponent? luaParking) && luaParking.ParkingConsole)
             {
                 RefreshParkingState(uid, deed != null ? GetFullName(deed) : null, targetId);
                 continue;
             }
 
-            if (!TryComp<BankAccountComponent>(player, out var bank)) continue;
+            if (!_bank.TryGetBalance(player, out var balance)) continue;
             int sellValue = 0;
             if (deed?.ShuttleUid != null)
             {
@@ -827,7 +831,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
 
             var fullName = deed != null ? GetFullName(deed) : null;
             RefreshState(uid,
-                bank.Balance,
+                balance,
                 true,
                 fullName,
                 sellValue,
@@ -1051,7 +1055,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
         if (xform.GridUid == null)
             return;
 
-        if (!TryComp<ShuttleDeedComponent>(xform.GridUid.Value, out var shuttleDeed) || !TryComp<ShuttleComponent>(xform.GridUid.Value, out var shuttle) || !HasComp<TransformComponent>(xform.GridUid.Value) || shuttle == null || ShipyardMap == null)
+        if (!TryComp<ShuttleDeedComponent>(xform.GridUid.Value, out var shuttleDeed) || !_gridAccess.TryGetShuttleGrid(xform.GridUid.Value, out var shuttle) || !HasComp<TransformComponent>(xform.GridUid.Value) || shuttle == null || ShipyardMap == null)
             return;
 
         var output = DeedRegex.Replace($"{shuttleDeed.ShuttleOwner}", ""); // Removes content inside parentheses along with parentheses and a preceding space
@@ -1191,8 +1195,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
 
             // Get the player's balance or use 0 if they don't have a bank account
             int balance = 0;
-            if (TryComp<BankAccountComponent>(player, out var bank))
-                balance = bank.Balance;
+            _bank.TryGetBalance(player, out balance);
 
             // Update the UI with the new ship name, preserving the original sell value
             var fullName = GetFullName(deed);
@@ -1263,8 +1266,7 @@ public sealed partial class ShipyardSystem : SharedShipyardSystem
 
         // Get the player's balance or use 0 if they don't have a bank account
         int balance = 0;
-        if (TryComp<BankAccountComponent>(player, out var bank))
-            balance = bank.Balance;
+        _bank.TryGetBalance(player, out balance);
 
         // Update the UI
         RefreshState(uid, balance, true, null, 0, targetId, (ShipyardConsoleUiKey)args.UiKey, false);

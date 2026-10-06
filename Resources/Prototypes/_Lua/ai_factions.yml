@@ -33,6 +33,8 @@
   - Syndicate # Lua
   hostile:
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - SimpleHostile
   - Xeno
@@ -55,12 +57,15 @@
   - ContrabandClothing # Frontier
   - ContrabandDetection # Frontier
   - LuaTech # Lua
+  - HostileSyndicate
 
 - type: npcFaction
   id: LuaTech
   hostile:
   # SS14 factions
   - NanoTrasen
+  - Ussp
+  - TSFMC
   - Neutral
   - Dragon
   - Mouse
@@ -85,6 +90,7 @@
   - Goblin
   - Pibble
   - NFSyndicate
+  - HostileSyndicate
   - WizFedFaction
   - BloodCultNF
   - NFPirate
@@ -105,3 +111,43 @@
   - PointDefenseGun
   - IndependentShip
   - HostileIndependentShip
+
+# Expedition Syndicate mobs — do not share NFSyndicate with player company.
+- type: npcFaction
+  id: HostileSyndicate
+  hostile:
+  ## SS14 factions
+  - NanoTrasen
+  - Ussp
+  - TSFMC
+  - Neutral
+  - Syndicate
+  - SimpleHostile
+  - SimpleNeutral
+  - Passive
+  - PetsNT
+  - Zombie
+  - Revolutionary
+  - Xeno
+  - Wizard
+  - Dragon
+  - Xenoborg
+  ## Frontier Factions
+  - Monkey
+  - Goblin
+  - NFSyndicate
+  - WizFedFaction
+  - BloodCultNF
+  - NFPirate
+  - ExplorersExpeditionNF
+  - ArtifactConstruct
+  - StreetGangNF
+  - DinosaursNF
+  - MercenariesExpeditionNF
+  - SiliconsExpeditionNF
+  - AberrantFleshExpeditionNF
+  - ContrabandClothing
+  - ContrabandDetection
+  ## Lua
+  - LuaNordFoll
+  - LuaTech

@@ -1,6 +1,7 @@
+using Content.Lua.UIKit.Styles;
 using Content.Client.Shuttles.Systems;
 using Content.Client.Stylesheets;
-using Content.Shared._Lua.SpaceHazards;
+using Content.Lua.Shared.SpaceHazards;
 using Content.Shared._Mono.Company;
 using Content.Shared._NF.Shuttles.Components;
 using Content.Shared._NF.Shipyard.Components;
@@ -26,6 +27,7 @@ using Robust.Shared.Random;
 using Robust.Shared.Timing;
 using Robust.Shared.Utility;
 using System.Numerics;
+using Robust.Shared.GameObjects;
 
 namespace Content.Client.Shuttles.UI;
 
@@ -34,7 +36,6 @@ public sealed partial class MapScreen : BoxContainer
 {
     [Dependency] private readonly IEntityManager _entManager = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly IMapManager _mapManager = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     private readonly SharedAudioSystem _audio;
     private readonly SharedMapSystem _maps;
@@ -439,7 +440,7 @@ public sealed partial class MapScreen : BoxContainer
             _mapHeadings.Add(mapComp.MapId, gridContents);
             var viewerCompanyName = string.Empty;
             if (_entManager.TryGetComponent(_shuttleEntity.Value, out CompanyComponent? viewerCompany)) viewerCompanyName = viewerCompany.CompanyName;
-            foreach (var grid in _mapManager.GetAllGrids(mapComp.MapId))
+            foreach (var grid in _maps.GetAllGrids(mapComp.MapId))
             {
                 if (grid.Owner != _shuttleEntity && IsHiddenByNebulaVeil(grid.Owner))
                     continue;
@@ -874,12 +875,12 @@ public sealed partial class MapScreen : BoxContainer
             const float radius = 3.5f;
             const float outer = 6f;
 
-            handle.DrawCircle(center, radius, color, false);
-            handle.DrawCircle(center, 1f, color, true);
-            handle.DrawLine(center + new Vector2(0f, -outer), center + new Vector2(0f, -radius - 1f), color);
-            handle.DrawLine(center + new Vector2(0f, radius + 1f), center + new Vector2(0f, outer), color);
-            handle.DrawLine(center + new Vector2(-outer, 0f), center + new Vector2(-radius - 1f, 0f), color);
-            handle.DrawLine(center + new Vector2(radius + 1f, 0f), center + new Vector2(outer, 0f), color);
+            LunaDraw.Circle(handle, center, radius, color, false);
+            LunaDraw.Circle(handle, center, 1f, color, true);
+            LunaDraw.Line(handle, center + new Vector2(0f, -outer), center + new Vector2(0f, -radius - 1f), color);
+            LunaDraw.Line(handle, center + new Vector2(0f, radius + 1f), center + new Vector2(0f, outer), color);
+            LunaDraw.Line(handle, center + new Vector2(-outer, 0f), center + new Vector2(-radius - 1f, 0f), color);
+            LunaDraw.Line(handle, center + new Vector2(radius + 1f, 0f), center + new Vector2(outer, 0f), color);
         }
     }
 }

@@ -27,10 +27,19 @@ ent-EnergySwordDoubleLegal = легальный двухклинковый эн�
     .desc = NanoTrasen разобрала склад контрабанды и легализовала некоторые мечи для вип. Его можно хранить в кармане.
 
 store-vip-tier-shareholder = Акционер
+store-vip-tier-shareholderlua = Акционер
 store-vip-tier-god = Божество
+store-vip-tier-boost = Boost
 store-vip-tier-rank1 = Ранг I
 store-vip-tier-rank2 = Ранг II
 store-vip-tier-rank3 = Ранг III
+store-vip-tier-rank4 = Ранг IV
+store-vip-tier-rank5 = Ранг V
+store-vip-tier-rank6 = Ранг VI
+store-vip-tier-rank7 = Ранг VII
+store-vip-tier-rank8 = Ранг VIII
+store-vip-tier-rank9 = Ранг IX
+store-vip-tier-rank10 = Ранг X
 
 store-vip-category-flatpack = упаковки
 store-vip-category-crates = ящики
@@ -39,6 +48,13 @@ store-vip-category-cloaks = плащи
 store-vip-category-bedsheets = одеяла
 store-vip-category-useful = полезное
 store-vip-category-fuel = топливо
+
+store-merc-category-hardsuit = скафандры
+store-merc-category-clothing = одежда
+store-merc-category-backpack = рюкзаки
+store-merc-category-gun = оружие
+store-merc-category-ammo = патроны
+store-merc-category-nocat = разное
 
 uplink-vip-Luxury-name = элитный шахтёрский скафандр
 uplink-vip-Luxury-desc = Отремонтированный шахтёрский скафандр, выполненный в цветах квартирмейстера. Графеновая подкладка обеспечивает меньшую защиту, но с ней гораздо легче передвигаться.
@@ -561,3 +577,6 @@ uplink-vip-HardsuitShareholder-desc = { ent-HardsuitShareholder.desc }
 
 uplink-vip-HardsuitShareholderSyn-name = { ent-HardsuitShareholderSyn }
 uplink-vip-HardsuitShareholderSyn-desc = { ent-HardsuitShareholderSyn.desc }
+
+uplink-vip-DiscordToy-name = { ent-DiscordToy }
+uplink-vip-DiscordToy-desc = { ent-DiscordToy.desc }

@@ -91,7 +91,10 @@
       price: 750
 
 - type: entity
-  parent: WeaponTurretBaseLaser
+  categories: [ HideSpawnMenu ]
+  parent:
+  - WeaponTurretBaseLaser
+  - ConstructibleMachine
   id: WeaponTurretLaserLuaTech
   name: оборонная турель "LuaTech"
   suffix: LuaTech, HTN
@@ -121,9 +124,18 @@
   - type: NpcFactionMember
     factions:
     - LuaTech
+  - type: Machine
+    board: WeaponTurretLaserLuaTechCircuitboard
+  - type: ContainerContainer
+    containers:
+      machine_board: !type:Container
+      machine_parts: !type:Container
 
 - type: entity
-  parent: WeaponLaserTurretL1Phalanx
+  categories: [ ShuttleGun ]
+  parent:
+  - WeaponLaserTurretL1Phalanx
+  - ConstructibleMachine
   id: WeaponTurretLaserShuttleLuaTech
   name: лазерная турель LuaTech
   suffix: LuaTech, Shuttle
@@ -152,8 +164,15 @@
     proto: VioletLaserShip
     fireCost: 300
   - type: LuaTech
+  - type: Machine
+    board: WeaponTurretLaserShuttleLuaTechCircuitboard
+  - type: ContainerContainer
+    containers:
+      machine_board: !type:Container
+      machine_parts: !type:Container
 
 - type: entity
+  categories: [ ShuttleGun ]
   parent: WeaponLaserTurretPrometheus
   id: WeaponTurretBigLaserShuttleLuaTech
   name: большая лазерная турель LuaTech
@@ -191,3 +210,9 @@
     proto: VioletBigLaserShip
     fireCost: 50
   - type: LuaTech
+  - type: Machine
+    board: WeaponTurretBigLaserShuttleLuaTechCircuitboard
+  - type: ContainerContainer
+    containers:
+      machine_board: !type:Container
+      machine_parts: !type:Container

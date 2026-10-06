@@ -16,7 +16,7 @@ public sealed partial class BallisticAmmoProviderComponent : Component
     [DataField]
     public SoundSpecifier? SoundInsert = new SoundPathSpecifier("/Audio/Weapons/Guns/MagIn/bullet_insert.ogg");
 
-    [ViewVariables(VVAccess.ReadWrite), DataField]
+    [ViewVariables(VVAccess.ReadWrite), DataField, AutoNetworkedField]
     public EntProtoId? Proto;
 
     [ViewVariables(VVAccess.ReadWrite), DataField]
@@ -57,6 +57,12 @@ public sealed partial class BallisticAmmoProviderComponent : Component
     /// </summary>
     [DataField]
     public TimeSpan FillDelay = TimeSpan.FromSeconds(0.5);
+
+    /// <summary>
+    /// Goobstation - is ammo automatically ejected after each shot
+    /// </summary>
+    [DataField]
+    public bool AutoCycle = true;
 
     /// <summary>
     /// Mono - ignore UnspawnedCount and keep firing the prototype ammo indefinitely.

@@ -4,7 +4,7 @@
   description: job-description-chemist
   playTimeTracker: JobChemist
   requiredCompany: Nanotrasen
-  salary: 45000
+  salary: 34000
   setPreference: true # Lua
   requirements:
     - !type:DepartmentTimeRequirement
@@ -47,6 +47,6 @@
   equipment:
     head: ClothingHeadHatBeretMedic
     mask: ClothingMaskSterile
-    neck: ClothingNeckStethoscope
+    necklace: ClothingNeckStethoscope
     outerClothing: ClothingOuterCoatLabChem
     gloves: ClothingHandsGlovesLatex

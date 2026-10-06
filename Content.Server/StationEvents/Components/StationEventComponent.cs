@@ -3,6 +3,7 @@ using Content.Shared.Roles; // Frontier
 using Robust.Shared.Audio;
 using Robust.Shared.Prototypes; // Frontier
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.StationEvents.Components;
 
@@ -147,4 +148,23 @@ public sealed partial class StationEventComponent : Component
     /// </summary>
     [DataField]
     public bool WarningAnnounced;
+
+    [DataField]
+    public StationEventAnnouncementScope AnnouncementScope = StationEventAnnouncementScope.Map;
+
+    [DataField]
+    public string? AnnouncementSender;
+
+    [ViewVariables]
+    public EntityUid? AnnouncementTarget;
+
+    [ViewVariables]
+    public bool LocalStartAnnounced;
+}
+
+public enum StationEventAnnouncementScope
+{
+    Global,
+    Map,
+    Station,
 }

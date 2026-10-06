@@ -4,6 +4,7 @@ using System.Linq;
 using Content.Server.Administration.Systems;
 using Content.Server.GameTicking;
 using Content.Server.Maps;
+using Content.Lua.Server.Shuttles.Systems;
 using Content.Server.Shuttles.Components;
 using Content.Server.Shuttles.Systems;
 using Content.Server.Spawners.Components;
@@ -31,7 +32,7 @@ namespace Content.IntegrationTests.Tests
     public sealed class PostMapInitTest
     {
         private const bool SkipTestMaps = true;
-        private const string TestMapsPath = "/Maps/_NF/Test/"; // Frontier: _NF
+        private const string TestMapsPath = "/Maps/_Lua/Test/";
 
         private static readonly string[] NoSpawnMaps =
         {
@@ -41,11 +42,9 @@ namespace Content.IntegrationTests.Tests
 
         private static readonly string[] Grids =
         {
-            // Frontier: no upstream maps, define our own.
-            // "/Maps/centcomm.yml",
             AdminTestArenaSystem.ArenaMapPath,
-            "/Maps/_NF/Shuttles/Admin/fishbowl.yml"
-            // End Frontier
+            "/Maps/_Lua/Shuttles/escape_pod_small.yml",
+            "/Maps/_Lua/ShuttleEvent/evac_omega.yml",
         };
 
         private static readonly string[] DoNotMapWhitelist =
@@ -58,7 +57,7 @@ namespace Content.IntegrationTests.Tests
             // "/Maps/Shuttles/ShuttleEvent/honki.yml", // Contains golden honker, clown's rubber stamp
             // "/Maps/Shuttles/ShuttleEvent/instigator.yml", // Contains EXP-320g "Friendship"
             // "/Maps/Shuttles/ShuttleEvent/syndie_evacpod.yml", // Contains syndicate rubber stamp
-            "/Maps/_NF/Outpost/frontier.yml", // Contains janitorial bomb suit closet
+            "/Maps/_Lua/Outpost/frontier.yml", // Contains janitorial bomb suit closet
             "/Maps/_NF/POI/tinnia.yml", // Contains syndicate rubber stamp
             "/Maps/_NF/POI/lpbravo.yml", // Contains syndicate rubber stamp
             "/Maps/_NF/Shuttles/Admin/fishbowl.yml", // Contains CentComm folder
@@ -288,7 +287,7 @@ namespace Content.IntegrationTests.Tests
                     var protoId = yamlEntity["proto"].AsString();
 
                     // This doesn't properly handle prototype migrations, but thats not a significant issue.
-                    if (!protoManager.TryIndex(protoId, out var proto, false))
+                    if (!protoManager.TryIndex<EntityPrototype>(protoId, out var proto))
                         continue;
 
                     Assert.That(!proto.Categories.Contains(dnmCategory),
@@ -340,13 +339,14 @@ namespace Content.IntegrationTests.Tests
             });
             var server = pair.Server;
 
-            var mapManager = server.ResolveDependency<IMapManager>();
+            var mapManager = server.ResolveDependency<IEntityManager>().System<SharedMapSystem>();
             var entManager = server.ResolveDependency<IEntityManager>();
             var mapLoader = entManager.System<MapLoaderSystem>();
             var mapSystem = entManager.System<SharedMapSystem>();
             var protoManager = server.ResolveDependency<IPrototypeManager>();
             var ticker = entManager.EntitySysManager.GetEntitySystem<GameTicker>();
             var shuttleSystem = entManager.EntitySysManager.GetEntitySystem<ShuttleSystem>();
+            var gridAccess = entManager.System<ShuttleGridAccessSystem>();
             var cfg = server.ResolveDependency<IConfigurationManager>();
             Assert.That(cfg.GetCVar(CCVars.GridFill), Is.False);
 
@@ -370,7 +370,7 @@ namespace Content.IntegrationTests.Tests
 
                 var grids = mapManager.GetAllGrids(mapId).ToList();
                 var gridUids = grids.Select(o => o.Owner).ToList();
-                targetGrid = gridUids.First();
+                Assert.That(gridUids, Is.Not.Empty, $"Map {mapProto} loaded with no grids");
 
                 foreach (var grid in grids)
                 {
@@ -387,19 +387,22 @@ namespace Content.IntegrationTests.Tests
                     }
                 }
 
+                Assert.That(targetGrid, Is.Not.Null,
+                    $"Map {mapProto} has no station grids. Add BecomesStation to a grid with id matching the gameMap stations key.");
+
                 // Test shuttle can dock.
                 // This is done inside gamemap test because loading the map takes ages and we already have it.
-                var station = entManager.GetComponent<StationMemberComponent>(targetGrid!.Value).Station;
+                var station = entManager.GetComponent<StationMemberComponent>(targetGrid.Value).Station;
                 if (entManager.TryGetComponent<StationEmergencyShuttleComponent>(station, out var stationEvac))
                 {
                     var shuttlePath = stationEvac.EmergencyShuttlePath;
                     Assert.That(mapLoader.TryLoadGrid(shuttleMap, shuttlePath, out var shuttle),
                         $"Failed to load {shuttlePath}");
 
+                    Assert.That(gridAccess.TryGetShuttleGrid(shuttle!.Value.Owner, out var shuttleGrid), Is.True,
+                        $"Emergency shuttle {shuttlePath} has no shuttle grid component");
                     Assert.That(
-                        shuttleSystem.TryFTLDock(shuttle!.Value.Owner,
-                            entManager.GetComponent<ShuttleComponent>(shuttle!.Value.Owner),
-                            targetGrid.Value),
+                        shuttleSystem.TryFTLDock(shuttle!.Value.Owner, shuttleGrid!, targetGrid.Value),
                         $"Unable to dock {shuttlePath} to {mapProto}");
                 }
 
@@ -424,16 +427,43 @@ namespace Content.IntegrationTests.Tests
                     var jobs = new HashSet<ProtoId<JobPrototype>>(comp.SetupAvailableJobs.Keys);
 
                     var spawnPoints = entManager.EntityQuery<SpawnPointComponent>()
-                        .Where(x => x.SpawnType == SpawnPointType.Job && x.Job != null)
+                        .Where(x => x.Job != null && x.SpawnType == SpawnPointType.LateJoin)
                         .Select(x => x.Job.Value);
 
                     jobs.ExceptWith(spawnPoints);
 
                     spawnPoints = entManager.EntityQuery<ContainerSpawnPointComponent>()
-                        .Where(x => x.SpawnType is SpawnPointType.Job or SpawnPointType.Unset && x.Job != null)
+                        .Where(x => x.Job != null && x.SpawnType is SpawnPointType.LateJoin or SpawnPointType.Unset)
                         .Select(x => x.Job.Value);
 
                     jobs.ExceptWith(spawnPoints);
+
+                    var companySpawnsOnMap = new HashSet<string>();
+                    var companySpawnQuery = entManager.AllEntityQueryEnumerator<SpawnPointComponent, TransformComponent>();
+                    while (companySpawnQuery.MoveNext(out var spawn, out var xform))
+                    {
+                        if (spawn.Company == null
+                            || xform.GridUid == null
+                            || !gridUids.Contains(xform.GridUid.Value))
+                        {
+                            continue;
+                        }
+
+                        companySpawnsOnMap.Add(spawn.Company.Value);
+                    }
+
+                    jobs.RemoveWhere(jobId =>
+                    {
+                        if (!protoManager.TryIndex(jobId, out JobPrototype job)
+                            || string.IsNullOrWhiteSpace(job.RequiredCompany))
+                        {
+                            return false;
+                        }
+
+                        return job.RequiredCompany
+                            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                            .Any(companySpawnsOnMap.Contains);
+                    });
 
                     Assert.That(jobs, Is.Empty, $"There is no spawnpoints for {string.Join(", ", jobs)} on {mapProto}.");
                 }
@@ -490,6 +520,9 @@ namespace Content.IntegrationTests.Tests
                 // Frontier: FIXME - hacky test fix
                 .Where(x =>
                     x.ID == PoolManager.TestMap || // Frontier: check test map
+                    x.ID == "Frontier" ||
+                    x.MapPath.ToString().StartsWith("/Maps/_Lua/Test") ||
+                    x.MapPath.ToString().StartsWith("/Maps/_Lua/Outpost") ||
                     (x.MapPath.ToString().StartsWith("/Maps/_NF") && // Frontier: check frontier maps only
                     !x.MapPath.ToString().StartsWith("/Maps/_NF/Shuttles") && // Frontier: skip shuttles (not loaded as maps)
                     !x.MapPath.ToString().StartsWith("/Maps/_NF/POI")) // Frontier: skip POIs (not loaded as maps)

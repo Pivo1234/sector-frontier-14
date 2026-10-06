@@ -3,10 +3,10 @@
 # See AGPLv3.txt for details.
 
 - type: entity
-  id: Bullet20mm
-  name: 20mm HE
+  id: Bullet25mm
+  name: 25mm HE
   parent: 30mmBulletHE
-  categories: [ HideSpawnMenu ]
+  categories: [ HideSpawnMenu, ShuttleGun ]
   components:
   - type: Sprite
     sprite: _Lua/Objects/Weapons/Guns/Projectiles/explosives.rsi
@@ -31,10 +31,10 @@
     lifetime: 5
 
 - type: entity
-  id: Bullet53mm
-  name: 53mm HE
+  id: Bullet45mm
+  name: 45mm HE
   parent: 57mmBulletHE
-  categories: [ HideSpawnMenu ]
+  categories: [ HideSpawnMenu, ShuttleGun ]
   components:
   - type: Sprite
     sprite: _Lua/Objects/Weapons/Guns/Projectiles/explosives.rsi
@@ -59,10 +59,10 @@
     lifetime: 4.5
 
 - type: entity
-  id: Bullet80mm
-  name: 80mm HE
+  id: Bullet75mm
+  name: 75mm HE
   parent: 90mmBulletHE
-  categories: [ HideSpawnMenu ]
+  categories: [ HideSpawnMenu, ShuttleGun ]
   components:
   - type: Sprite
     sprite: _Lua/Objects/Weapons/Guns/Projectiles/explosives.rsi
@@ -87,10 +87,10 @@
     lifetime: 4.2
 
 - type: entity
-  id: Bullet105mm
-  name: 105mm HE
+  id: Bullet95mm
+  name: 95mm HE
   parent: 90mmBulletHE
-  categories: [ HideSpawnMenu ]
+  categories: [ HideSpawnMenu, ShuttleGun ]
   components:
   - type: Sprite
     sprite: _Lua/Objects/Weapons/Guns/Projectiles/explosives.rsi
@@ -115,10 +115,10 @@
     lifetime: 6
 
 - type: entity
-  id: Bullet120mm
-  name: 120mm HE
+  id: Bullet130mm
+  name: 130mm HE
   parent: 120mmBulletAPHEDS
-  categories: [ HideSpawnMenu ]
+  categories: [ HideSpawnMenu, ShuttleGun ]
   components:
   - type: Sprite
     sprite: _Lua/Objects/Weapons/Guns/Projectiles/explosives.rsi
@@ -145,10 +145,10 @@
     lifetime: 8
 
 - type: entity
-  id: Bullet140mm
-  name: 140mm HE
+  id: Bullet155mm
+  name: 155mm HE
   parent: 140mmBulletAPHE
-  categories: [ HideSpawnMenu ]
+  categories: [ HideSpawnMenu, ShuttleGun ]
   components:
   - type: Sprite
     sprite: _Lua/Objects/Weapons/Guns/Projectiles/explosives.rsi

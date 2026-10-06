@@ -52,6 +52,15 @@ public sealed class HolopadSystem : SharedHolopadSystem
         RaiseNetworkEvent(netEv);
     }
 
+    public void RefreshHologram(EntityUid hologram, EntityUid? linkedEntity)
+    {
+        if (!TryComp<HolopadHologramComponent>(hologram, out var holopadHologram))
+            return;
+
+        holopadHologram.LinkedEntity = linkedEntity;
+        UpdateHologramSprite(hologram, linkedEntity);
+    }
+
     private void UpdateHologramSprite(EntityUid hologram, EntityUid? target)
     {
         // Get required components

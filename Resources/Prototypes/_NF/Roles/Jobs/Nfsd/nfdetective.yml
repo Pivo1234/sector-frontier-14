@@ -42,7 +42,7 @@
 - type: startingGear
   id: NFDetectiveGear
   equipment:
-    pocket1: NFWeaponRevolverInspector
+    pocket1: WeaponRevolverInspector
     pocket2: FlashlightNfsdLite
   storage:
     back:
@@ -65,7 +65,7 @@
     head: ClothingHeadHatFedoraBrown
     mask: ClothingMaskGasSecurity
     eyes: ClothingEyesGlassesNfsd
-    neck: ClothingNeckNfsdBadgeDetective
+    necklace: ClothingNeckNfsdBadgeDetective
     gloves: ClothingHandsGlovesForensic
     shoes: ClothingShoesBootsNfsdBrownFilled
     belt: ClothingBeltNfsdFilled

@@ -1,10 +1,10 @@
+using Content.Lua.Shared.Shuttles;
 // New Frontiers - This file is licensed under AGPLv3
 // Copyright (c) 2024 New Frontiers Contributors
 // See AGPLv3.txt for details.
 
 using Content.Server._NF.Station.Components;
 using Content.Server.Shuttles.Components;
-using Content.Server._Lua.Shuttles.Systems; // Lua
 using Content.Shared._NF.Shuttles.Events;
 using Content.Shared._NF.Shipyard.Components;
 using Content.Shared.Shuttles.Components;
@@ -15,7 +15,7 @@ namespace Content.Server.Shuttles.Systems;
 public sealed partial class ShuttleSystem
 {
     [Dependency] private readonly RadarConsoleSystem _radarConsole = default!;
-    [Dependency] private readonly ShuttleTabletSystem _tablet = default!; // Lua
+    [Dependency] private readonly IShuttleTabletSystem _tablet = default!;
 
     private const float SpaceFrictionStrength = 0.0075f;
     private const float DampenDampingStrength = 0.25f;
@@ -30,7 +30,7 @@ public sealed partial class ShuttleSystem
         SubscribeLocalEvent<ShuttleConsoleComponent, SetHideTargetRequest>(NfSetHideTarget);
     }
 
-    private bool SetInertiaDampening(EntityUid uid, ShuttleComponent shuttleComponent, EntityUid shuttle, InertiaDampeningMode mode) // Lua
+    private bool SetInertiaDampening(EntityUid uid, IShuttleGrid shuttleComponent, EntityUid shuttle, InertiaDampeningMode mode) // Lua
     {
         /* Lua start
 
@@ -75,10 +75,8 @@ public sealed partial class ShuttleSystem
             return;
         }
 
-        if (!EntityManager.TryGetComponent(gridUid, out ShuttleComponent? shuttleComponent))
-        {
+        if (!_gridAccess.TryGetShuttleGrid(gridUid, out var shuttleComponent))
             return;
-        }
         // Lua end
 
         if (SetInertiaDampening(uid, shuttleComponent, gridUid, args.Mode) && args.Mode != InertiaDampeningMode.Query) // Lua
@@ -129,7 +127,7 @@ public sealed partial class ShuttleSystem
             EntityManager.HasComponent<StationDampeningComponent>(_station.GetOwningStation(gridUid))) // Lua
             return InertiaDampeningMode.Station;
 
-        if (!EntityManager.TryGetComponent(gridUid, out ShuttleComponent? shuttle)) // Lua
+        if (!_gridAccess.TryGetShuttleGrid(gridUid, out var shuttle)) // Lua
             return InertiaDampeningMode.Dampen;
 
         if (shuttle.BodyModifier >= AnchorDampingStrength)
@@ -148,10 +146,8 @@ public sealed partial class ShuttleSystem
             return;
         }
 
-        if (!EntityManager.TryGetComponent(gridUid, out ShuttleComponent? shuttleComponent))
-        {
+        if (!_gridAccess.TryGetShuttleGrid(gridUid, out var shuttleComponent))
             return;
-        }
         // Lua end
 
         // Update dampening physics without adjusting requested mode.
